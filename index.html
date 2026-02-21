@@ -1,0 +1,1886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>City Soulmate 2026</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    min-height: 100vh;
+    background: #06060e;
+    color: #e8e8f0;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    overflow-x: hidden;
+  }
+  #root { position: relative; min-height: 100vh; }
+
+  /* Fixed background decorations */
+  #bg-grid {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,50,100,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,50,100,0.03) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+  #bg-orb1 {
+    position: fixed; width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(255,40,100,0.07) 0%, transparent 70%);
+    top: -150px; right: -150px; border-radius: 50%;
+    pointer-events: none; z-index: 0;
+  }
+  #bg-orb2 {
+    position: fixed; width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(50,100,255,0.05) 0%, transparent 70%);
+    bottom: -100px; left: -100px; border-radius: 50%;
+    pointer-events: none; z-index: 0;
+  }
+
+  #app {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; padding: 0 20px;
+  }
+
+  /* ── Screens ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── Intro ── */
+  #intro { text-align: center; padding: 80px 0 60px; }
+  .badge-pill {
+    display: inline-block;
+    border: 1px solid rgba(255,50,100,0.4);
+    border-radius: 4px; padding: 4px 16px;
+    font-size: 11px; letter-spacing: 4px;
+    color: #ff3264; margin-bottom: 32px;
+    text-transform: uppercase;
+  }
+  h1.logo {
+    font-size: clamp(44px,9vw,76px); font-weight: 900;
+    margin: 0 0 8px; line-height: 1.02; letter-spacing: -2.5px;
+    background: linear-gradient(135deg,#ffffff 0%,#ff3264 45%,#ff8c42 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .tagline {
+    font-size: 12px; color: rgba(180,180,210,0.5);
+    letter-spacing: 3px; text-transform: uppercase; margin-bottom: 48px;
+  }
+  .feature-grid {
+    background: rgba(255,50,100,0.04);
+    border: 1px solid rgba(255,50,100,0.12);
+    border-radius: 14px; padding: 20px 28px;
+    margin-bottom: 40px; text-align: left;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px;
+  }
+  .feature-item { display: flex; gap: 10px; align-items: flex-start; }
+  .feature-icon { font-size: 20px; flex-shrink: 0; }
+  .feature-title { font-size: 13px; font-weight: 700; color: #e8e8f0; }
+  .feature-sub { font-size: 11px; color: rgba(160,160,190,0.6); margin-top: 2px; }
+  #session-info {
+    margin-bottom: 20px; font-size: 12px; color: rgba(150,150,180,0.6);
+    display: none;
+  }
+  .session-label { color: rgba(255,50,100,0.7); }
+  .pool-reset { color: #00d4aa; }
+
+  /* Buttons */
+  .btn-primary {
+    background: linear-gradient(135deg,#ff3264,#ff8c42);
+    border: none; border-radius: 10px; padding: 18px 60px;
+    font-size: 15px; font-weight: 700; color: #fff;
+    cursor: pointer; letter-spacing: 2px; text-transform: uppercase;
+    font-family: inherit;
+    box-shadow: 0 0 40px rgba(255,50,100,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-primary:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 60px rgba(255,50,100,0.5);
+  }
+  .btn-restart {
+    width: 100%;
+    background: linear-gradient(135deg,#ff3264,#ff8c42);
+    border: none; border-radius: 10px; padding: 17px;
+    font-size: 14px; font-weight: 700; color: #fff;
+    cursor: pointer; letter-spacing: 2px; text-transform: uppercase;
+    font-family: inherit;
+    box-shadow: 0 0 30px rgba(255,50,100,0.22);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-restart:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 50px rgba(255,50,100,0.4);
+  }
+  .footer-note {
+    margin-top: 16px; font-size: 11px;
+    color: rgba(120,120,160,0.4); letter-spacing: 1px;
+  }
+
+  /* ── Quiz ── */
+  #quiz { padding: 44px 0 60px; }
+  .quiz-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px;
+  }
+  .quiz-cat {
+    font-size: 11px; letter-spacing: 3px;
+    color: rgba(180,180,210,0.4); text-transform: uppercase;
+  }
+  .quiz-counter {
+    font-size: 13px; color: rgba(255,50,100,0.8);
+    font-weight: 700; letter-spacing: 1px;
+  }
+  .progress-track {
+    height: 2px; background: rgba(255,255,255,0.05);
+    border-radius: 2px; margin-bottom: 40px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg,#ff3264,#ff8c42);
+    border-radius: 2px; transition: width 0.4s ease;
+    box-shadow: 0 0 10px rgba(255,50,100,0.4);
+  }
+  .question-wrap {
+    transition: opacity 0.22s, transform 0.22s;
+  }
+  .question-wrap.hidden { opacity: 0; transform: translateY(-10px); }
+  .question-text {
+    font-size: clamp(18px,3.5vw,25px); font-weight: 700;
+    line-height: 1.4; margin-bottom: 36px;
+    letter-spacing: -0.3px; color: #f0f0f8;
+  }
+  .options { display: flex; flex-direction: column; gap: 12px; }
+  .opt-btn {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px; padding: 16px 20px;
+    text-align: left; cursor: pointer;
+    color: rgba(190,190,215,0.85);
+    font-size: 14px; line-height: 1.5; font-family: inherit;
+    transition: all 0.18s; transform: scale(1);
+    display: flex; align-items: flex-start; gap: 14px;
+    width: 100%;
+  }
+  .opt-btn:hover:not(.locked) {
+    background: var(--col10);
+    border-color: var(--col40);
+  }
+  .opt-btn.selected {
+    background: var(--col18);
+    border-color: var(--col70);
+    color: #fff; transform: scale(1.008);
+    box-shadow: 0 0 20px var(--col18);
+  }
+  .opt-letter {
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 6px;
+    background: var(--col20); border: 1px solid var(--col50);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800; color: var(--col);
+    margin-top: 1px; transition: all 0.18s;
+  }
+  .opt-btn.selected .opt-letter {
+    background: var(--col); color: #fff;
+  }
+  .dots {
+    display: flex; gap: 8px; justify-content: center; margin-top: 40px;
+  }
+  .dot {
+    height: 6px; border-radius: 3px;
+    background: rgba(255,255,255,0.08);
+    transition: width 0.3s, background 0.3s;
+  }
+  .dot.done { background: rgba(255,50,100,0.55); }
+  .dot.active { background: #ff3264; }
+
+  /* ── Result ── */
+  #result { padding: 50px 0 80px; }
+  .result-header { text-align: center; margin-bottom: 32px; }
+  .result-eyebrow {
+    font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+    color: rgba(255,50,100,0.7); margin-bottom: 12px;
+  }
+  .result-flag { font-size: 64px; line-height: 1; margin-bottom: 6px; }
+
+  /* Hero card */
+  .hero-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px; overflow: hidden; margin-bottom: 20px;
+  }
+  .hero-banner {
+    position: relative; height: 300px; overflow: hidden; flex-shrink: 0;
+  }
+  .hero-fade {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.15) 55%, transparent 100%);
+    z-index: 1;
+  }
+  .hero-soul {
+    position: absolute; top: 16px; right: 16px; z-index: 3;
+    background: rgba(0,0,0,0.60);
+    border: 1px solid rgba(255,255,255,0.25);
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    border-radius: 8px; padding: 6px 14px;
+    font-size: 12px; font-weight: 700; color: #fff;
+    letter-spacing: 2px; text-transform: uppercase;
+  }
+  .hero-city-info {
+    position: absolute; bottom: 0; left: 0;
+    padding: 20px 24px; z-index: 3;
+  }
+  .hero-city-name {
+    margin: 0; font-size: clamp(28px,6vw,48px); font-weight: 900;
+    letter-spacing: -1.5px; line-height: 1; color: #fff;
+    text-shadow: 0 2px 20px rgba(0,0,0,1), 0 0 60px rgba(0,0,0,0.8);
+  }
+  .hero-country {
+    margin: 5px 0 0; color: rgba(255,255,255,0.85);
+    font-size: 13px; letter-spacing: 2px;
+    text-shadow: 0 1px 10px rgba(0,0,0,1);
+  }
+
+  /* Score bar */
+  .score-bar-wrap {
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .score-bar-header {
+    display: flex; justify-content: space-between; margin-bottom: 8px;
+  }
+  .score-label {
+    font-size: 11px; color: rgba(180,180,210,0.4);
+    letter-spacing: 2px; text-transform: uppercase;
+  }
+  .score-value { font-size: 13px; font-weight: 800; }
+  .score-track {
+    height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px;
+  }
+  .score-fill {
+    height: 100%; border-radius: 2px;
+    transition: width 0.6s ease;
+  }
+
+  /* Political badge */
+  .pol-wrap { padding: 12px 24px; }
+  .pol-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    border-radius: 6px; padding: 5px 14px;
+    font-size: 11px; letter-spacing: 1px;
+  }
+  .pol-liberal {
+    background: rgba(100,220,100,0.08);
+    border: 1px solid rgba(100,220,100,0.25);
+    color: #6adc6a;
+  }
+  .pol-conservative {
+    background: rgba(210,160,50,0.08);
+    border: 1px solid rgba(210,160,50,0.25);
+    color: #d4a03a;
+  }
+
+  /* Stats grid */
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: 8px; margin-bottom: 20px;
+  }
+  .stat-cell {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 10px; padding: 10px 8px; text-align: center;
+  }
+  .stat-icon { font-size: 16px; margin-bottom: 3px; }
+  .stat-val { font-size: 20px; font-weight: 900; line-height: 1; }
+  .stat-bar-track {
+    height: 2px; background: rgba(255,255,255,0.05);
+    border-radius: 1px; margin: 5px 4px 4px;
+  }
+  .stat-bar-fill { height: 100%; border-radius: 1px; }
+  .stat-lbl {
+    font-size: 8px; color: rgba(130,130,160,0.5);
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+
+  /* Local Intel */
+  .intel-box {
+    background: rgba(0,212,170,0.04);
+    border: 1px solid rgba(0,212,170,0.18);
+    border-left: 3px solid #00d4aa;
+    border-radius: 0 10px 10px 0;
+    padding: 18px 22px; margin-bottom: 16px;
+  }
+  .intel-header {
+    font-size: 10px; letter-spacing: 3px; color: #00d4aa;
+    text-transform: uppercase; margin-bottom: 14px;
+  }
+  .intel-sub {
+    font-size: 10px; letter-spacing: 2px; color: rgba(0,212,170,0.55);
+    text-transform: uppercase; margin-bottom: 5px;
+  }
+  .intel-text {
+    margin: 0; font-size: 13px; line-height: 1.65;
+    color: rgba(215,215,235,0.88);
+  }
+  .intel-divider {
+    height: 1px; background: rgba(0,212,170,0.1); margin-bottom: 12px;
+  }
+
+  /* Hard Truth */
+  .truth-box {
+    background: rgba(255,50,64,0.05);
+    border: 1px solid rgba(255,50,64,0.2);
+    border-left: 3px solid #ff3264;
+    border-radius: 0 10px 10px 0;
+    padding: 18px 22px; margin-bottom: 16px;
+  }
+  .truth-header {
+    font-size: 10px; letter-spacing: 3px; color: #ff3264;
+    text-transform: uppercase; margin-bottom: 9px;
+  }
+  .truth-text {
+    margin: 0; font-size: 14px; line-height: 1.75;
+    color: rgba(215,215,235,0.9); font-style: italic;
+  }
+
+  /* Why this city */
+  .why-wrap { margin-bottom: 16px; }
+  .why-btn {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px; padding: 13px 20px;
+    color: rgba(190,190,215,0.8);
+    font-size: 13px; cursor: pointer; font-family: inherit;
+    width: 100%; text-align: left;
+    display: flex; justify-content: space-between; align-items: center;
+    transition: background 0.2s;
+  }
+  .why-btn:hover { background: rgba(255,255,255,0.06); }
+  .why-arrow { font-size: 10px; color: rgba(150,150,180,0.5); }
+  .why-panel {
+    display: none;
+    background: rgba(255,255,255,0.015);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-top: none; border-radius: 0 0 8px 8px;
+    padding: 14px 18px;
+  }
+  .why-panel.open { display: block; }
+  .why-panel-label {
+    margin: 0 0 10px; font-size: 10px;
+    color: rgba(130,130,160,0.5); letter-spacing: 2px; text-transform: uppercase;
+  }
+  .match-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 7px 0; gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .match-row:last-child { border-bottom: none; }
+  .match-attr { font-size: 12px; font-weight: 700; color: #e0e0f0; margin-bottom: 1px; }
+  .match-sub { font-size: 10px; color: rgba(130,130,160,0.55); }
+  .match-pct { font-size: 12px; font-weight: 800; color: #00d4aa; flex-shrink: 0; }
+
+  /* Pool counter */
+  .pool-counter {
+    text-align: center; margin-bottom: 20px;
+    font-size: 11px; color: rgba(100,100,140,0.4); letter-spacing: 1px;
+  }
+  .result-footer {
+    text-align: center; margin-top: 14px;
+    font-size: 10px; color: rgba(80,80,120,0.4); letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+<div id="root">
+  <div id="bg-grid"></div>
+  <div id="bg-orb1"></div>
+  <div id="bg-orb2"></div>
+
+  <div id="app">
+
+    <!-- INTRO SCREEN -->
+    <div id="intro" class="screen active">
+      <div class="badge-pill">2026 · v2.0 · 4-Option Engine</div>
+      <h1 class="logo">CITY<br>SOULMATE</h1>
+      <p class="tagline">The world's most brutally honest city matcher</p>
+      <div class="feature-grid">
+        <div class="feature-item">
+          <span class="feature-icon">🏙️</span>
+          <div>
+            <div class="feature-title">149 Cities</div>
+            <div class="feature-sub">from Zurich to Mogadishu</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">❓</span>
+          <div>
+            <div class="feature-title">60 Questions</div>
+            <div class="feature-sub">4 honest options each</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🔄</span>
+          <div>
+            <div class="feature-title">Anti-Repeat</div>
+            <div class="feature-sub">Each question appears only once per session</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">⚖️</span>
+          <div>
+            <div class="feature-title">Smart Scoring</div>
+            <div class="feature-sub">Extreme cities demand extreme answers</div>
+          </div>
+        </div>
+      </div>
+      <div id="session-info">
+        <span class="session-label">Session:</span>
+        <span id="session-used">0</span>/<span id="session-total">60</span> questions seen
+        <span id="pool-reset-msg" class="pool-reset" style="display:none"> · Pool reset ✓</span>
+      </div>
+      <button class="btn-primary" onclick="startQuiz()">Find My City →</button>
+      <p class="footer-note">10 QUESTIONS · 4 OPTIONS · WEIGHTED SCORING · NO FILTER</p>
+    </div>
+
+    <!-- QUIZ SCREEN -->
+    <div id="quiz" class="screen">
+      <div class="quiz-header">
+        <span class="quiz-cat" id="q-cat"></span>
+        <span class="quiz-counter" id="q-counter"></span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+      <div class="question-wrap" id="question-wrap">
+        <p class="question-text" id="q-text"></p>
+        <div class="options" id="options"></div>
+      </div>
+      <div class="dots" id="dots"></div>
+    </div>
+
+    <!-- RESULT SCREEN -->
+    <div id="result" class="screen">
+      <div class="result-header">
+        <div class="result-eyebrow">🎯 Your City Soulmate 2026</div>
+        <div class="result-flag" id="r-flag"></div>
+      </div>
+
+      <div class="hero-card">
+        <div class="hero-banner" id="hero-banner">
+          <div class="hero-fade"></div>
+          <div class="hero-soul" id="hero-soul"></div>
+          <div class="hero-city-info">
+            <h2 class="hero-city-name" id="hero-city-name"></h2>
+            <p class="hero-country" id="hero-country"></p>
+          </div>
+        </div>
+
+        <div class="score-bar-wrap">
+          <div class="score-bar-header">
+            <span class="score-label">Match Score</span>
+            <span class="score-value" id="score-value"></span>
+          </div>
+          <div class="score-track">
+            <div class="score-fill" id="score-fill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div class="pol-wrap">
+          <span class="pol-badge" id="pol-badge"></span>
+        </div>
+      </div>
+
+      <div class="stats-grid" id="stats-grid"></div>
+
+      <div class="intel-box">
+        <div class="intel-header">🔍 Local Intel</div>
+        <div>
+          <div class="intel-sub">🎯 Best For</div>
+          <p class="intel-text" id="r-bestFor"></p>
+        </div>
+        <div class="intel-divider"></div>
+        <div>
+          <div class="intel-sub">🤫 Secret Tip</div>
+          <p class="intel-text" id="r-secretTip"></p>
+        </div>
+      </div>
+
+      <div class="truth-box">
+        <div class="truth-header">⚠️ The Hard Truth</div>
+        <p class="truth-text" id="r-truth"></p>
+      </div>
+
+      <div class="why-wrap">
+        <button class="why-btn" onclick="toggleWhy()">
+          <span>🤔 Why exactly this city?</span>
+          <span class="why-arrow" id="why-arrow">▼</span>
+        </button>
+        <div class="why-panel" id="why-panel">
+          <p class="why-panel-label">Top Match Factors</p>
+          <div id="why-rows"></div>
+        </div>
+      </div>
+
+      <div class="pool-counter" id="pool-counter"></div>
+
+      <button class="btn-restart" onclick="startQuiz()">🔄 New Round — Different Mix</button>
+      <p class="result-footer">149 CITIES · 4-OPTION SCORING · ANTI-REPEAT · CORE-CATEGORY GATE</p>
+    </div>
+
+  </div><!-- #app -->
+</div><!-- #root -->
+
+<script>
+"use strict";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────────────────────────────────────
+const cityData = [
+  {city:"Berlin",country:"Germany",pulse:9,redTape:5,thirst:8,laptopSafety:8,expatRatio:8,wealth:6,air:4,walk:8,political:"Liberal",internet:9,soul:"Hedonistic-Hollow",truth:"You pay the club entry with your soul. Every local is an artist who never makes art.",bestFor:"Perfect for creatives who put freedom, nightlife, and affordable studios above comfort.",secretTip:"Live in Neukölln-Rixdorf not Prenzlauer Berg — same energy, 30% less rent, actual neighbors."},
+  {city:"Lisbon",country:"Portugal",pulse:6,redTape:6,thirst:6,laptopSafety:8,expatRatio:9,wealth:7,air:9,walk:8,political:"Liberal",internet:8,soul:"Gentrified-Fado",truth:"Every other apartment is an Airbnb. The real Lisboans now live 40km outside.",bestFor:"Perfect for Europeans who want to combine sun, startup vibes, and still-affordable rents.",secretTip:"Mouraria not Alfama — the locals are still there, the rents too, and fewer drunk tourists."},
+  {city:"New York City",country:"USA",pulse:10,redTape:6,thirst:9,laptopSafety:7,expatRatio:8,wealth:1,air:6,walk:9,political:"Liberal",internet:9,soul:"Relentless-Grinder",truth:"$6,000 rent, 80-hour weeks, and everyone tells you how amazing life is.",bestFor:"Perfect for career junkies who prefer anonymity, speed, and global networking over having a soul.",secretTip:"Ridgewood not Williamsburg — same subway time, half the price, no hype tax."},
+  {city:"Tokyo",country:"Japan",pulse:7,redTape:4,thirst:2,laptopSafety:10,expatRatio:2,wealth:6,air:6,walk:10,political:"Conservative",internet:10,soul:"Zen-Hell",truth:"Perfect city, zero social life. You die alone between vending machines and neon lights.",bestFor:"Perfect for introverts who want world-class infrastructure and social invisibility simultaneously.",secretTip:"Koenji not Shimokitazawa — cheaper bars, better record stores, fewer Instagram tourists."},
+  {city:"Amsterdam",country:"Netherlands",pulse:7,redTape:5,thirst:7,laptopSafety:9,expatRatio:7,wealth:2,air:5,walk:8,political:"Liberal",internet:9,soul:"Pretentious-Liberal",truth:"Everyone is tolerant except toward people who can't afford to live here.",bestFor:"Perfect for liberal pragmatists who value cycling culture, tolerance, and an international network.",secretTip:"Rent in Noord — 20min ferry from center, rent 40% cheaper, up-and-coming creative scene."},
+  {city:"Paris",country:"France",pulse:7,redTape:7,thirst:8,laptopSafety:8,expatRatio:5,wealth:3,air:6,walk:8,political:"Liberal",internet:8,soul:"Arrogant-Beautiful",truth:"The city smells of urine and grandeur simultaneously. Locals hate you in French.",bestFor:"Perfect for aesthetes who prioritize cultural density and grandeur over social warmth.",secretTip:"11th arrondissement not Le Marais — real bars, locals who actually go to bars, no tourist prices."},
+  {city:"London",country:"UK",pulse:8,redTape:5,thirst:8,laptopSafety:8,expatRatio:9,wealth:1,air:5,walk:8,political:"Liberal",internet:9,soul:"Broken-Empire",truth:"You need £5,000 for a one-bedroom with mold. But the pubs are great.",bestFor:"Perfect for career-driven people who want global networking and cultural density at any price.",secretTip:"Walthamstow not Hackney — Elizabeth Line straight to center, house prices haven't fully exploded yet."},
+  {city:"Barcelona",country:"Spain",pulse:8,redTape:5,thirst:9,laptopSafety:7,expatRatio:9,wealth:5,air:9,walk:8,political:"Liberal",internet:8,soul:"Party-Colony",truth:"Pickpockets have higher success rates than the local startup scene.",bestFor:"Perfect for sun worshippers who want to combine city life, beach, and Southern European pace.",secretTip:"Poblenou not El Born — beach nearby, tourist crowds gone, coworking scene is growing."},
+  {city:"Rome",country:"Italy",pulse:8,redTape:9,thirst:8,laptopSafety:7,expatRatio:5,wealth:6,air:9,walk:7,political:"Conservative",internet:6,soul:"Ancient-Chaos",truth:"Nothing works, but it's so damn beautiful you stop caring.",bestFor:"Perfect for pleasure-seekers who put history, food, and bella vita above efficiency.",secretTip:"Pigneto not Trastevere — locals' neighborhood, cheap trattorias, real Roman nightlife."},
+  {city:"Vienna",country:"Austria",pulse:4,redTape:5,thirst:4,laptopSafety:10,expatRatio:4,wealth:4,air:6,walk:9,political:"Liberal",internet:9,soul:"Boring-Wealthy",truth:"Museum density with cemetery atmosphere. World-class coffee houses, zero-point-zero pulse.",bestFor:"Perfect for culture enthusiasts who want world-class quality of life in a quiet, ordered setting.",secretTip:"Ottakring not Josefstadt — Gürtel bars, cheaper rents, multicultural and underrated."},
+  {city:"Zurich",country:"Switzerland",pulse:3,redTape:8,thirst:3,laptopSafety:10,expatRatio:4,wealth:1,air:7,walk:8,political:"Liberal",internet:10,soul:"Sterile-Wealthy",truth:"Everything works. Nobody laughs. A beer costs 8 francs. You won't find friends.",bestFor:"Perfect for anyone who values order, nature, and a fat salary above spontaneous city life.",secretTip:"Zürich West not the city center — industrial quarter with best bar density minus 5-star prices."},
+  {city:"Copenhagen",country:"Denmark",pulse:4,redTape:4,thirst:5,laptopSafety:10,expatRatio:5,wealth:2,air:5,walk:9,political:"Liberal",internet:9,soul:"Hygge-Lie",truth:"Locals form friend groups in primary school. You're not invited. Ever.",bestFor:"Perfect for sustainability fans who live design, cycling, and Nordic quality of life as a lifestyle.",secretTip:"Nørrebro not Frederiksberg — cheaper, more diverse, better street food scene, genuine vibe."},
+  {city:"Stockholm",country:"Sweden",pulse:5,redTape:4,thirst:5,laptopSafety:10,expatRatio:5,wealth:3,air:4,walk:8,political:"Liberal",internet:9,soul:"Nordic-Ice-Block",truth:"6 months of darkness test your will to live. An apartment costs a kidney.",bestFor:"Perfect for career-driven people who want innovation, design, and nature united in one city.",secretTip:"East Södermalm not Vasastan — cheaper, more creative, still everything walkable."},
+  {city:"Munich",country:"Germany",pulse:5,redTape:5,thirst:5,laptopSafety:9,expatRatio:5,wealth:3,air:6,walk:8,political:"Conservative",internet:9,soul:"Prim-and-Bavarian",truth:"Lederhosen facade hiding €3,000 rents. Order above all else. Fun strictly regulated.",bestFor:"Perfect for anyone who values German salaries, Bavarian order, and Alpine views.",secretTip:"Sendling not Schwabing — S-Bahn to center, 20% cheaper rents, fewer tourist crowds."},
+  {city:"Madrid",country:"Spain",pulse:8,redTape:4,thirst:9,laptopSafety:8,expatRatio:7,wealth:6,air:9,walk:8,political:"Liberal",internet:8,soul:"Fiesta-Anarchy",truth:"Everything opens at midnight. Your sleep schedule dies in week two.",bestFor:"Perfect for night owls who love Southern European pace, warmth, and vibrancy.",secretTip:"Lavapiés not Malasaña — more authentic, cheaper, multicultural heart of the city."},
+  {city:"Prague",country:"Czech Republic",pulse:7,redTape:4,thirst:6,laptopSafety:9,expatRatio:7,wealth:7,air:6,walk:9,political:"Conservative",internet:8,soul:"Bachelor-Party-Dystopia",truth:"Every Friday the city becomes a British binge-drinking orgy. Locals flee to the suburbs.",bestFor:"Perfect for culture lovers who want to live cheaply and centrally in Europe amid beauty.",secretTip:"Žižkov not Vinohrady — same tram connection, half the price, double the character."},
+  {city:"Warsaw",country:"Poland",pulse:7,redTape:4,thirst:6,laptopSafety:8,expatRatio:5,wealth:7,air:5,walk:8,political:"Conservative",internet:8,soul:"Post-Soviet-Hustle",truth:"Rapid growth, rising nationalism. Freedom has an expiration date.",bestFor:"Perfect for career starters seeking EU opportunities, low costs, and rapid growth.",secretTip:"Praga-Północ not Śródmieście — hippest neighborhood in the city, rents still affordable."},
+  {city:"Budapest",country:"Hungary",pulse:8,redTape:6,thirst:8,laptopSafety:7,expatRatio:7,wealth:8,air:7,walk:8,political:"Conservative",internet:7,soul:"Ruin-Nostalgia",truth:"Orbán's shadow hangs over everything. Cheap, beautiful, politically toxic.",bestFor:"Perfect for pleasure travelers who value European beauty, cheap living, and nightlife.",secretTip:"District VIII not District VII — real locals, no ruin-bar tourist mobs, cheaper."},
+  {city:"Athens",country:"Greece",pulse:8,redTape:8,thirst:8,laptopSafety:6,expatRatio:6,wealth:7,air:9,walk:7,political:"Liberal",internet:6,soul:"Mythic-Fiasco",truth:"The bureaucracy dates from antiquity and hasn't been updated since.",bestFor:"Perfect for sun-hungry people who enjoy Mediterranean flair, history, and a relaxed pace.",secretTip:"Metaxourgeio not Monastiraki — art scene, cheap apartments, real Athens pulse without tourist density."},
+  {city:"Singapore",country:"Singapore",pulse:5,redTape:3,thirst:4,laptopSafety:10,expatRatio:8,wealth:3,air:8,walk:9,political:"Conservative",internet:10,soul:"Sterile-Dystopia",truth:"Chewing gum is practically illegal. Perfect infrastructure, zero soul, maximum surveillance.",bestFor:"Perfect for career-driven people who put Asian hub status, legal security, and efficiency above freedom.",secretTip:"Tiong Bahru not Orchard Road — best hawker food, colonial architecture, actual neighborhood feel."},
+  {city:"Sydney",country:"Australia",pulse:6,redTape:3,thirst:7,laptopSafety:9,expatRatio:7,wealth:2,air:9,walk:7,political:"Liberal",internet:9,soul:"Beach-Capitalism",truth:"Cheap beaches, impossible rents. Surfing as compensation for future poverty.",bestFor:"Perfect for outdoor types who want to combine world-class nature and English-speaking expat life.",secretTip:"Newtown not Bondi Beach — cheaper rents, better bars, more creative community, same sun."},
+  {city:"Dubai",country:"UAE",pulse:6,redTape:3,thirst:5,laptopSafety:9,expatRatio:10,wealth:5,air:8,walk:5,political:"Conservative",internet:9,soul:"Gilded-Cage",truth:"No alcohol on the beach. No criticizing the government. In return: brunch with gold decoration.",bestFor:"Perfect for tax-optimized expats who prioritize luxury, security, and international networking.",secretTip:"JLT not Downtown — 40% cheaper rents, Metro connection, real life without brunch decoration."},
+  {city:"Toronto",country:"Canada",pulse:5,redTape:4,thirst:6,laptopSafety:9,expatRatio:8,wealth:2,air:4,walk:7,political:"Liberal",internet:9,soul:"Polite-Void",truth:"Most diverse city in the world, everyone lives in bubbles. Nobody knows why they're here.",bestFor:"Perfect for immigrants who seek multicultural openness, safety, and career opportunities.",secretTip:"Leslieville not Distillery District — locals' neighborhood, affordable cafés, no tourist prices."},
+  {city:"San Francisco",country:"USA",pulse:7,redTape:6,thirst:7,laptopSafety:8,expatRatio:8,wealth:1,air:7,walk:7,political:"Liberal",internet:9,soul:"Tech-Dystopia",truth:"Homeless people next to Tesla millionaires. Your app idea matters more than human suffering.",bestFor:"Perfect for tech founders who put global networks and venture capital above quality of life.",secretTip:"Outer Sunset not Mission — cheaper rents, ocean air, authentic Asian restaurants."},
+  {city:"Seoul",country:"South Korea",pulse:9,redTape:5,thirst:8,laptopSafety:9,expatRatio:3,wealth:5,air:4,walk:9,political:"Conservative",internet:10,soul:"K-Speed-Burnout",truth:"Work is religion. Cosmetic surgery is mandatory. Burnout at 30 is standard.",bestFor:"Perfect for tech enthusiasts who value K-culture, speed, and world-class digital infrastructure.",secretTip:"Mangwon-dong not Hongdae — locals' bars, cheaper, authentic Seoul without the uni party strip."},
+  {city:"Hong Kong",country:"China",pulse:9,redTape:5,thirst:6,laptopSafety:8,expatRatio:7,wealth:1,air:5,walk:9,political:"Conservative",internet:10,soul:"Finance-Cage",truth:"Political freedom: past tense. Freedom to buy: still available. Don't breathe too deep.",bestFor:"Perfect for finance expats who want to combine an Asian financial hub with Western comfort.",secretTip:"Sham Shui Po not Central — cheapest neighborhood, best street food, real HK pulse."},
+  {city:"São Paulo",country:"Brazil",pulse:10,redTape:8,thirst:9,laptopSafety:3,expatRatio:6,wealth:5,air:4,walk:4,political:"Liberal",internet:6,soul:"Megacity-Anarchy",truth:"Largest helicopter fleet in the world — because the streets are life-threatening even for the rich.",bestFor:"Perfect for entrepreneurs seeking the Latin American market, cultural energy, and business networks.",secretTip:"Vila Madalena not Jardins — art, bars, music — heart of the creative scene, more affordable."},
+  {city:"Mexico City",country:"Mexico",pulse:9,redTape:7,thirst:9,laptopSafety:5,expatRatio:8,wealth:7,air:5,walk:7,political:"Liberal",internet:7,soul:"Creative-Chaos",truth:"Earthquakes, smog, corruption, cartels — and still the best food scene in Latin America.",bestFor:"Perfect for creatives who want world-class food, culture, and energy on a small budget.",secretTip:"Roma Norte not Condesa — same vibe, 20% cheaper restaurants, slightly less touristy."},
+  {city:"Istanbul",country:"Turkey",pulse:9,redTape:7,thirst:8,laptopSafety:6,expatRatio:6,wealth:5,air:5,walk:7,political:"Conservative",internet:7,soul:"Imperial-Chaos",truth:"Inflation shrinks your budget monthly. Erdoğan does the same to press freedom.",bestFor:"Perfect for cultural bridge-builders who want to connect Europe and Asia, history and modernity.",secretTip:"Karaköy not Sultanahmet — real city not tourist backdrop, best coffee houses, gallery scene."},
+  {city:"Tel Aviv",country:"Israel",pulse:8,redTape:6,thirst:10,laptopSafety:7,expatRatio:7,wealth:2,air:10,walk:8,political:"Liberal",internet:9,soul:"Mediterranean-Paranoia",truth:"Best party city in the Middle East. Rocket alarm app is a mandatory download.",bestFor:"Perfect for sun lovers who seek beach life, a tech scene, and intense social energy.",secretTip:"Florentine not Rothschild — cheaper, rough, best nightlife in the city, real locals."},
+  {city:"Melbourne",country:"Australia",pulse:7,redTape:3,thirst:7,laptopSafety:9,expatRatio:7,wealth:3,air:6,walk:8,political:"Liberal",internet:9,soul:"Coffee-Cult",truth:"Everyone has a hot take on pour-over vs espresso. Rents: pure Melbourne-flavored trauma.",bestFor:"Perfect for coffee snobs and culture lovers who put quality of life and creativity above beach.",secretTip:"Fitzroy not South Yarra — art, vinyl, best cafés, rents haven't fully exploded yet."},
+  {city:"Taipei",country:"Taiwan",pulse:6,redTape:3,thirst:5,laptopSafety:9,expatRatio:5,wealth:8,air:5,walk:9,political:"Liberal",internet:10,soul:"Democratic-Jewel",truth:"The most peaceful country China threatens daily. Existential dread, excellent food.",bestFor:"Perfect for tech-minded people who value democracy, safety, food, and digital infrastructure.",secretTip:"Zhongshan not Da'an — up-and-coming, cheaper restaurants, bars that locals actually go to."},
+  {city:"Osaka",country:"Japan",pulse:7,redTape:4,thirst:5,laptopSafety:9,expatRatio:3,wealth:7,air:6,walk:9,political:"Conservative",internet:10,soul:"Street-Food-Isolation",truth:"Even friendlier than Tokyo, even more closed off to foreigners. Takoyaki doesn't help.",bestFor:"Perfect for foodies who want to experience Japanese culture more deeply than in Tokyo.",secretTip:"Nakazakicho not Shinsaibashi — vintage shops, indie cafés, cheapest apartments in central Osaka."},
+  {city:"Mumbai",country:"India",pulse:10,redTape:9,thirst:7,laptopSafety:3,expatRatio:6,wealth:5,air:2,walk:4,political:"Liberal",internet:5,soul:"Maximum-Overwhelm",truth:"20 million people, one direction: forward. Air: liquid poison. Energy: electric.",bestFor:"Perfect for adrenaline junkies who want maximum urban energy and an Indian business network.",secretTip:"Bandra West not Colaba — expat community, best restaurants, more bearable traffic situation."},
+  {city:"Cape Town",country:"South Africa",pulse:7,redTape:5,thirst:7,laptopSafety:5,expatRatio:7,wealth:6,air:10,walk:6,political:"Liberal",internet:7,soul:"Apartheid-Aftershock",truth:"Most beautiful city in Africa, divided by invisible walls between rich and poor.",bestFor:"Perfect for nature lovers who want world-class landscape, wine, and a relaxed expat lifestyle.",secretTip:"Observatory not Green Point — cheapest hip neighborhood, UCT nearby, genuinely mixed community."},
+  {city:"Cairo",country:"Egypt",pulse:10,redTape:9,thirst:6,laptopSafety:4,expatRatio:4,wealth:7,air:3,walk:3,political:"Conservative",internet:5,soul:"Pharaonic-Chaos",truth:"Honking is a language. Traffic jams are a lifestyle. Bureaucracy dates from the Middle Ages.",bestFor:"Perfect for Arabists and adventurers seeking deep cultural immersion and maximum authenticity.",secretTip:"Maadi not Zamalek — expat hotspot with gardens, cheaper rents, calmer without full Cairo chaos."},
+  {city:"Kuala Lumpur",country:"Malaysia",pulse:7,redTape:5,thirst:6,laptopSafety:7,expatRatio:7,wealth:7,air:5,walk:6,political:"Conservative",internet:8,soul:"Humid-Sprawl",truth:"40°C heat, no escape without a car. Food: divine. Everything else: compromise.",bestFor:"Perfect for Southeast Asia newcomers who value comfort, affordable living, and multilingualism.",secretTip:"Bangsar not KLCC — locals' restaurants, craft beer bars, cheaper apartments, genuine vibe."},
+  {city:"Reykjavik",country:"Iceland",pulse:3,redTape:3,thirst:6,laptopSafety:10,expatRatio:5,wealth:1,air:3,walk:6,political:"Liberal",internet:9,soul:"Priciest-Loneliness",truth:"€4,000 for a one-bedroom. In winter you get 4 hours of sun. The schnapps helps.",bestFor:"Perfect for nature extremists who put world-class outdoor experiences above social life.",secretTip:"Rent a car and live outside the city — 40% cheaper than the center, nature right outside the door."},
+  {city:"Brussels",country:"Belgium",pulse:4,redTape:9,thirst:5,laptopSafety:9,expatRatio:7,wealth:4,air:4,walk:7,political:"Liberal",internet:8,soul:"EU-Bureaucracy-Mecca",truth:"The heart of Europe has the soul of a filing cabinet. Frites save everything.",bestFor:"Perfect for EU insiders and diplomats who need central European networking and multilingualism.",secretTip:"Ixelles not the EU quarter — most vibrant neighborhood, cheaper bars, real Brussels atmosphere."},
+  {city:"Los Angeles",country:"USA",pulse:8,redTape:5,thirst:8,laptopSafety:7,expatRatio:7,wealth:2,air:8,walk:3,political:"Liberal",internet:8,soul:"Auto-Dystopia",truth:"Without a car you're nobody. 2-hour traffic jam for 10km. Everyone is making a film about themselves.",bestFor:"Perfect for entertainment industry types who want sun, network, and lifestyle diversity.",secretTip:"Eagle Rock not Silver Lake — cheaper, locals' restaurants, less hype premium, good connections."},
+  {city:"Chicago",country:"USA",pulse:8,redTape:5,thirst:7,laptopSafety:7,expatRatio:6,wealth:5,air:3,walk:7,political:"Liberal",internet:8,soul:"Wind-and-Wounds",truth:"Murderous winters, murderous crime in neighborhoods you avoid. Architecture: wow.",bestFor:"Perfect for anyone who wants NYC energy at a third of the price with real community.",secretTip:"Logan Square not Wicker Park — cheaper rents, better bars, real Chicago community."},
+  {city:"Delhi",country:"India",pulse:10,redTape:9,thirst:5,laptopSafety:4,expatRatio:5,wealth:6,air:1,walk:5,political:"Conservative",internet:6,soul:"Smog-Empire",truth:"AQI 400+ in winter. Are you breathing air or tar? In Delhi that's a genuine question.",bestFor:"Perfect for South Asia researchers seeking maximum cultural depth and historical density.",secretTip:"Hauz Khas Village in the evening — Delhi's best rooftops overlooking ruins, tourist reputation aside."},
+  {city:"Bangalore",country:"India",pulse:7,redTape:8,thirst:6,laptopSafety:7,expatRatio:6,wealth:6,air:5,walk:5,political:"Liberal",internet:8,soul:"Silicon-Gridlock",truth:"India's tech capital. Traffic collapse turns every 10km drive into a 90-minute adventure.",bestFor:"Perfect for tech professionals seeking the Indian startup ecosystem and an international community.",secretTip:"Indiranagar not Koramangala — craft beer bars, better restaurants, slightly less traffic."},
+  {city:"Lagos",country:"Nigeria",pulse:10,redTape:9,thirst:8,laptopSafety:2,expatRatio:5,wealth:5,air:3,walk:2,political:"Conservative",internet:4,soul:"Anarchic-Hustle",truth:"Power outages are the default. Laptop theft in 3 seconds. The energy is still unstoppable.",bestFor:"Perfect for adventurers who want maximum energy, rapid career growth, and African business.",secretTip:"Ikoyi not Victoria Island — quieter, more green space, cheaper restaurants, still expat infrastructure."},
+  {city:"Nairobi",country:"Kenya",pulse:8,redTape:7,thirst:6,laptopSafety:4,expatRatio:7,wealth:6,air:7,walk:5,political:"Conservative",internet:6,soul:"Safari-Silicon",truth:"Matatu traffic swallows 3 hours daily. Kidnapping insurance is not a joke here.",bestFor:"Perfect for African entrepreneurs who want a tech hub, nature access, and an English-speaking community.",secretTip:"Kilimani not Westlands — cheaper apartments, good restaurants, safer for pedestrians."},
+  {city:"Canggu",country:"Indonesia",pulse:7,redTape:5,thirst:8,laptopSafety:6,expatRatio:10,wealth:7,air:9,walk:5,political:"Liberal",internet:6,soul:"Instagram-Blase",truth:"Everyone is a yoga teacher, crypto trader, or both. The rice fields are now infinity pools.",bestFor:"Perfect for Instagram nomads who want to surf, do yoga, and meet like-minded people daily.",secretTip:"Berawa not Canggu center — quieter, less scooter gridlock, same beach, 20% cheaper cafés."},
+  {city:"Medellin",country:"Colombia",pulse:8,redTape:5,thirst:9,laptopSafety:5,expatRatio:9,wealth:8,air:8,walk:6,political:"Liberal",internet:7,soul:"Narco-Chic",truth:"Cheap, sexy, dangerous. You romanticize the city Pablo Escobar destroyed.",bestFor:"Perfect for budget lifestyle seekers who want eternal spring, energy, and a nomad community.",secretTip:"Laureles not El Poblado — locals' neighborhood, 40% cheaper rents, more authentic Medellín."},
+  {city:"Da Nang",country:"Vietnam",pulse:5,redTape:4,thirst:5,laptopSafety:8,expatRatio:6,wealth:9,air:9,walk:7,political:"Conservative",internet:7,soul:"Beach-Bar-Limbo",truth:"Visa run every 90 days. You live in limbo between tourist and expat. Forever.",bestFor:"Perfect for beach workers who want to combine affordable coastal living with rising infrastructure.",secretTip:"An Thượng street is the real nomad hub — cheaper and better than the tourist strip."},
+  {city:"Bansko",country:"Bulgaria",pulse:3,redTape:3,thirst:4,laptopSafety:9,expatRatio:8,wealth:9,air:5,walk:4,political:"Liberal",internet:7,soul:"Ski-Startup-Bunker",truth:"6 months ski, 6 months: now what? Small, cold, everyone knows everyone. That gets old.",bestFor:"Perfect for ski-and-laptop types who combine winter activities with Bulgaria's cheap prices.",secretTip:"Rent in the old village core not near the ski area — historic houses, cheap, less après-ski noise."},
+  {city:"Las Palmas",country:"Spain",pulse:5,redTape:4,thirst:6,laptopSafety:9,expatRatio:7,wealth:7,air:10,walk:8,political:"Liberal",internet:8,soul:"Eternal-Summer-Trap",truth:"Eternal climate, eternal mediocrity. Perfect for workaholics who need a beach nearby.",bestFor:"Perfect for year-round sun seekers who want a stable climate, surfing, and EU infrastructure.",secretTip:"Vegueta not Las Canteras beach — colonial old town, cheaper apartments, real Canarian cuisine."},
+  {city:"Chiang Mai",country:"Thailand",pulse:5,redTape:4,thirst:5,laptopSafety:8,expatRatio:8,wealth:9,air:6,walk:7,political:"Conservative",internet:7,soul:"Nomad-Mecca-Fatigue",truth:"Burning Season makes the air in March a health hazard. Every. Damn. March.",bestFor:"Perfect for Asia newcomers seeking affordable living, temple aesthetics, and a large nomad community.",secretTip:"Nimman without the One Nimman Center — the sois behind it are cheaper, quieter, same café density."},
+  {city:"Playa del Carmen",country:"Mexico",pulse:7,redTape:5,thirst:8,laptopSafety:6,expatRatio:8,wealth:5,air:9,walk:7,political:"Liberal",internet:7,soul:"Touristifiziert",truth:"Quinta Avenida: ein einziger Springbreak-Korridor. Echtes Mexiko: 5km entfernt, unerreichbar.",bestFor:"Perfect for Mexico beginners who want to combine beach, infrastructure, and tourist-safe zones.",secretTip:"South of Constituyentes not Quinta Avenida — real life, half the prices, same beach."},
+  {city:"Tbilisi",country:"Georgia",pulse:7,redTape:3,thirst:7,laptopSafety:8,expatRatio:8,wealth:9,air:7,walk:7,political:"Liberal",internet:8,soul:"Post-Soviet-Wine",truth:"Russian oligarchs flee here. Rents explode. Georgians watch with polite irritation.",bestFor:"Perfect for free spirits who want cheap living, open culture, and post-Soviet aesthetics.",secretTip:"Vera not the old town — locals' neighborhood with best natural wine bars, cheap apartments, no tourist circus."},
+  {city:"Tallinn",country:"Estonia",pulse:4,redTape:2,thirst:4,laptopSafety:10,expatRatio:6,wealth:7,air:3,walk:8,political:"Liberal",internet:10,soul:"Digital-Loneliness",truth:"E-Residency works; finding friends: Error 404. Dark, cold, efficient as a robot.",bestFor:"Perfect for digital nomads who value EU legal security, e-Residency, and Nordic efficiency.",secretTip:"Kalamaja not the old town — hippest neighborhood, wooden houses, cheap rents, top-level coffee culture."},
+  {city:"Split",country:"Croatia",pulse:5,redTape:4,thirst:7,laptopSafety:9,expatRatio:6,wealth:6,air:9,walk:8,political:"Liberal",internet:8,soul:"Adriatic-Small-Town",truth:"20,000 residents plus 200,000 seasonal tourists. In winter you're alone with 19,999 locals.",bestFor:"Perfect for summer season nomads who want to combine Adriatic beauty with urban infrastructure.",secretTip:"Meje not the old town — quieter, sea views, 10min walk to center, no cruise ship tourists."},
+  {city:"Tulum",country:"Mexico",pulse:7,redTape:6,thirst:8,laptopSafety:7,expatRatio:8,wealth:2,air:9,walk:5,political:"Liberal",internet:5,soul:"Luxury-Hippie-Lie",truth:"Cenote yoga for $200. No sewage system. Fecal matter ends up in the groundwater. Namaste.",bestFor:"Perfect for luxury hippies who seek jungle aesthetics, cenotes, and spiritual networking.",secretTip:"Aldea Zama not Zona Hotelera — cheaper restaurants, less tourist trap, actual infrastructure."},
+  {city:"Bali (Ubud)",country:"Indonesia",pulse:5,redTape:5,thirst:6,laptopSafety:7,expatRatio:8,wealth:7,air:7,walk:5,political:"Liberal",internet:6,soul:"Spiritual-Marketing",truth:"Everyone is searching for themselves. Most of them sell retreat packages to other searchers.",bestFor:"Perfect for spiritual seekers who love retreat culture, rice fields, and a creative environment.",secretTip:"Penestanan not Ubud center — rice fields outside your door, cheaper warungs, locals' neighborhood."},
+  {city:"Porto",country:"Portugal",pulse:6,redTape:5,thirst:6,laptopSafety:8,expatRatio:7,wealth:7,air:7,walk:8,political:"Liberal",internet:8,soul:"Wine-Gentrification",truth:"Was cheap. Was authentic. Now: Instagram backdrop with local displacement.",bestFor:"Perfect for wine lovers seeking Portuguese charm, azulejos, and a growing creative scene.",secretTip:"Bonfim not Ribeira — locals' neighborhood, cheaper apartments, best tascas without tourist prices."},
+  {city:"Valencia",country:"Spain",pulse:6,redTape:4,thirst:7,laptopSafety:9,expatRatio:6,wealth:8,air:9,walk:9,political:"Liberal",internet:8,soul:"Relaxed-Alternative",truth:"Less cool than Barcelona, therefore still affordable. That's changing right now.",bestFor:"Perfect for Barcelona lovers without a Barcelona budget who prioritize sun, beach, and paella.",secretTip:"Ruzafa not El Carmen — most vibrant neighborhood, food market, craft bars, cheapest rents in center."},
+  {city:"Oaxaca",country:"Mexico",pulse:4,redTape:5,thirst:5,laptopSafety:8,expatRatio:7,wealth:9,air:8,walk:7,political:"Liberal",internet:5,soul:"Artisanal-Idyll",truth:"Internet for video calls: Russian roulette. Mezcal solves it emotionally, not technically.",bestFor:"Perfect for mezcal connoisseurs seeking indigenous culture, craftsmanship, and gastronomic depth.",secretTip:"Santo Tomás Jalietza for the weekend market — 20min drive, no tourists, real Zapotec craftsmanship."},
+  {city:"Chiang Rai",country:"Thailand",pulse:3,redTape:4,thirst:3,laptopSafety:8,expatRatio:5,wealth:9,air:7,walk:5,political:"Conservative",internet:6,soul:"Forgotten-North-Thailand",truth:"Quieter than Chiang Mai. Maybe too quiet. No scene, no nightlife, pure nature.",bestFor:"Perfect for introverted nature lovers who want to experience Northern Thailand's mountain culture without mass tourism.",secretTip:"Rent a motorbike and head to Doi Tung — mountain villages, no tourists, landscape with no entry fee."},
+  {city:"Medellín",country:"Colombia",pulse:8,redTape:5,thirst:9,laptopSafety:5,expatRatio:9,wealth:8,air:8,walk:6,political:"Liberal",internet:7,soul:"Eternal-Spring-Comeback",truth:"Digital nomads drive up rents while blogging about affordable cost of living.",bestFor:"Perfect for lifestyle optimizers seeking eternal spring, purchasing power, and a growing expat community.",secretTip:"El Centro not El Poblado — real Medellín, use the metro, eat for a fraction of Poblado prices."},
+  {city:"Florianópolis",country:"Brazil",pulse:5,redTape:7,thirst:8,laptopSafety:7,expatRatio:6,wealth:5,air:9,walk:6,political:"Liberal",internet:7,soul:"Surf-Island-Bureaucracy",truth:"Brazil's most beautiful beaches. Portuguese mandatory. Bureaucracy: Kafkaesque on a samba rhythm.",bestFor:"Perfect for surfers who want to combine Brazilian energy with island idyll and beach culture.",secretTip:"Lagoa da Conceição not Jurerê — cheaper bars, surfer community, closer to the best waves."},
+  {city:"Madeira",country:"Portugal",pulse:3,redTape:3,thirst:4,laptopSafety:10,expatRatio:6,wealth:7,air:8,walk:6,political:"Liberal",internet:8,soul:"Retiree-Eden",truth:"Average age feels like 65. NHR tax paradise for Europeans, too quiet for the under-50s.",bestFor:"Perfect for remote workers seeking a stable climate, NHR tax benefits, and natural beauty.",secretTip:"Calheta not Funchal — quieter south, private sandy beach, 30% cheaper accommodation."},
+  {city:"Phuket",country:"Thailand",pulse:6,redTape:5,thirst:7,laptopSafety:7,expatRatio:8,wealth:5,air:8,walk:4,political:"Conservative",internet:7,soul:"Paradise-Industrialized",truth:"Mass tourism has steamrolled every authentic corner. Beautiful concrete bunker by the sea.",bestFor:"Perfect for beach lovers who want mass tourism infrastructure and affordable tropical living.",secretTip:"Rawai not Patong — locals' restaurants, quieter, cheapest long-term rents on the island."},
+  {city:"Penang",country:"Malaysia",pulse:6,redTape:4,thirst:5,laptopSafety:8,expatRatio:7,wealth:8,air:7,walk:7,political:"Conservative",internet:8,soul:"Street-Food-Gridlock",truth:"Asia's best food. Without a car you go nowhere. Contradiction served daily.",bestFor:"Perfect for foodie nomads seeking Asia's best street food and affordable city life.",secretTip:"Georgetown's Armenian Street in the morning — hawker stalls before tourist opening time, half price, same food."},
+  {city:"Ho Chi Minh City",country:"Vietnam",pulse:9,redTape:7,thirst:7,laptopSafety:6,expatRatio:7,wealth:8,air:5,walk:5,political:"Conservative",internet:8,soul:"Motorbike-Inferno",truth:"Crossing the street is an extreme sport. 9 million mopeds always have right of way.",bestFor:"Perfect for entrepreneurs seeking a dynamic market, affordable energy, and moped-speed pace.",secretTip:"District 3 not District 1 — locals' cafés, cheaper apartments, fewer tourist traps."},
+  {city:"Hoi An",country:"Vietnam",pulse:3,redTape:4,thirst:4,laptopSafety:8,expatRatio:6,wealth:8,air:9,walk:8,political:"Conservative",internet:7,soul:"Lantern-Kitsch",truth:"Floods during high tide. Instagrammable 11 months. The twelfth: hip-deep in water.",bestFor:"Perfect for slow-life romantics who love lantern light, tailoring culture, and cycling lifestyle.",secretTip:"An Bang Beach not the old town center — quieter, locals' restaurants right on the sea, no tourist mobs."},
+  {city:"Koh Lanta",country:"Thailand",pulse:2,redTape:4,thirst:4,laptopSafety:7,expatRatio:6,wealth:9,air:10,walk:3,political:"Liberal",internet:5,soul:"Off-Grid-Almost-Paradise",truth:"No doctor, no hospital, no stable internet. Beautiful. Risky. Lonely.",bestFor:"Perfect for off-grid dropouts who want silence, sea views, and minimal social obligations.",secretTip:"Long Beach south side not north — fewer bars, more nature, bioluminescent beach at night."},
+  {city:"Batumi",country:"Georgia",pulse:7,redTape:5,thirst:7,laptopSafety:7,expatRatio:7,wealth:8,air:8,walk:5,political:"Liberal",internet:7,soul:"Casino-Coast",truth:"Ottoman architecture meets Soviet concrete meets casino neon. Unexpectedly alive.",bestFor:"Perfect for seekers of the unexpected who want cheap Black Sea coastal living and Georgian wine.",secretTip:"Old town not the new promenade — Ottoman architecture, cheapest restaurants, no casino spectacle."},
+  {city:"Diani Beach",country:"Kenya",pulse:3,redTape:5,thirst:5,laptopSafety:6,expatRatio:5,wealth:7,air:10,walk:3,political:"Liberal",internet:4,soul:"Coral-Isolation",truth:"Beautiful, far from everything. Internet: pray. Coworking: bring your own.",bestFor:"Perfect for luxury dropouts who want white sand, coral reef, and absolute silence.",secretTip:"North of Diani Centre — fewer hotels, cheaper accommodation, same beach without jet-ski noise."},
+  {city:"Mostar",country:"Bosnia",pulse:5,redTape:5,thirst:4,laptopSafety:8,expatRatio:5,wealth:9,air:8,walk:6,political:"Conservative",internet:6,soul:"War-Wound-Beauty",truth:"The bridge was destroyed twice. The political system was built afterward. Works just as well.",bestFor:"Perfect for history lovers who want Balkan beauty, low prices, and authenticity.",secretTip:"Explore after 9pm — tourists gone, Stari Most glowing, locals sitting on terraces."},
+  {city:"Ohrid",country:"North Macedonia",pulse:2,redTape:4,thirst:3,laptopSafety:8,expatRatio:4,wealth:9,air:9,walk:5,political:"Conservative",internet:5,soul:"UNESCO-Loneliness",truth:"3,000 years of history, 50,000 residents, 0 coworking spaces. For hermits with laptops.",bestFor:"Perfect for hermits seeking UNESCO beauty, mountain air, and total peace far from the mainstream.",secretTip:"Kaneo not the old town — fishing village above the lake, cheapest accommodation, breathtaking view."},
+  {city:"Plovdiv",country:"Bulgaria",pulse:5,redTape:3,thirst:4,laptopSafety:8,expatRatio:5,wealth:9,air:7,walk:8,political:"Liberal",internet:7,soul:"Artist-Silence",truth:"Cheapest lifestyle city in Europe. Reason: not much happens. You get used to it.",bestFor:"Perfect for budget-conscious travelers seeking European old town beauty at the cheapest EU price.",secretTip:"Kapana district in the evening — gallery-hopping, cheap wine bars, Europe's most relaxed creative scene."},
+  {city:"Valletta",country:"Malta",pulse:4,redTape:5,thirst:5,laptopSafety:9,expatRatio:7,wealth:5,air:9,walk:7,political:"Liberal",internet:8,soul:"Mini-Capital",truth:"Smallest EU capital. 6,000 residents. Everyone knows everyone. Gossip is the national sport.",bestFor:"Perfect for small-city fans who want Mediterranean beauty, English as an official language, and EU law.",secretTip:"Mdina for the weekend — silent sister city, medieval, car-free, 40min bus from Valletta."},
+  {city:"San Cristóbal",country:"Mexico",pulse:4,redTape:6,thirst:4,laptopSafety:7,expatRatio:6,wealth:9,air:8,walk:7,political:"Liberal",internet:5,soul:"Zapatista-Romance",truth:"Political tensions between indigenous communities and the state. You're a guest in a conflict.",bestFor:"Perfect for politically aware people seeking indigenous culture, coffee culture, and alternative Mexico.",secretTip:"Mercado José Castillo Tielemans not the tourist market — real prices, Tzeltales sell directly."},
+  {city:"Cali",country:"Colombia",pulse:8,redTape:6,thirst:10,laptopSafety:4,expatRatio:7,wealth:8,air:8,walk:5,political:"Liberal",internet:6,soul:"Salsa-and-Shadows",truth:"The salsa dancer of your life finds you. Then someone else follows you with different intentions.",bestFor:"Perfect for dance enthusiasts who want the salsa mecca, cheap living, and Colombian warmth.",secretTip:"Granada not Parque del Perro — locals' bars, salsa clubs without cover charge, cheaper cocktails."},
+  {city:"Kigali",country:"Rwanda",pulse:4,redTape:4,thirst:3,laptopSafety:8,expatRatio:5,wealth:6,air:8,walk:7,political:"Conservative",internet:7,soul:"Clean-Control",truth:"Africa's cleanest city. Plastic bags banned. Free speech: somehow also banned.",bestFor:"Perfect for impact professionals seeking Africa's safest city and a growing tech ecosystem.",secretTip:"Kimironko Market on Saturdays — biggest market, cheapest prices, real Kigali away from expat cafés."},
+  {city:"Phnom Penh",country:"Cambodia",pulse:7,redTape:5,thirst:7,laptopSafety:5,expatRatio:7,wealth:9,air:8,walk:5,political:"Conservative",internet:6,soul:"Dark-Tourism-Nexus",truth:"Cheap beer, trauma on every corner, questionable governance. Expats come anyway.",bestFor:"Perfect for Southeast Asia veterans seeking the cheapest city life and historically complex depth.",secretTip:"BKK1 not Riverside — expat infrastructure, cheaper restaurants, safer for pedestrians at night."},
+  {city:"Zadar",country:"Croatia",pulse:4,redTape:4,thirst:5,laptopSafety:9,expatRatio:5,wealth:7,air:9,walk:8,political:"Liberal",internet:8,soul:"Adriatic-Hidden-Gem",truth:"More beautiful than Split, quieter than Dubrovnik. In winter: ghost town with a sunset.",bestFor:"Perfect for Adriatic lovers seeking the Dalmatian coast without Dubrovnik prices and crowds.",secretTip:"Belafuža Beach — 15min by bike from center, no tourists, crystal clear water, no entry fee."},
+  {city:"Palermo",country:"Italy",pulse:8,redTape:8,thirst:7,laptopSafety:6,expatRatio:5,wealth:7,air:9,walk:7,political:"Conservative",internet:6,soul:"Chaotic-Beautiful",truth:"Sicilian bureaucracy is its own art form. The mafia is folklore and sometimes not.",bestFor:"Perfect for chaos lovers who seek Sicilian intensity, street food, and Baroque architecture.",secretTip:"Ballarò market early in the morning — locals shopping, cheapest street food in Italy, no tourists."},
+  {city:"Brno",country:"Czech Republic",pulse:4,redTape:3,thirst:4,laptopSafety:9,expatRatio:4,wealth:9,air:6,walk:8,political:"Liberal",internet:8,soul:"Cheap-Invisible",truth:"Europe's best-kept secret. Small, affordable, boring — ideal depending on your perspective.",bestFor:"Perfect for Europeans who want Czech quality of life at a fraction of Prague prices.",secretTip:"Špilberk area not the center — university quarter, cheapest bars in Czech Republic, real student pulse."},
+  {city:"Lake Atitlán",country:"Guatemala",pulse:5,redTape:6,thirst:5,laptopSafety:7,expatRatio:7,wealth:9,air:9,walk:4,political:"Liberal",internet:4,soul:"Volcano-Hippie-Trap",truth:"Volcano, Maya culture, no stable internet. Nomads come and forget to leave.",bestFor:"Perfect for dropouts seeking Maya culture, volcanic scenery, and spiritual community energy.",secretTip:"San Marcos not Panajachel — meditation centers, cheaper, quieter, locals' restaurants on the lake."},
+  {city:"Antigua",country:"Guatemala",pulse:5,redTape:5,thirst:5,laptopSafety:7,expatRatio:7,wealth:8,air:8,walk:7,political:"Conservative",internet:6,soul:"Colonial-Snow-Globe",truth:"Beautiful, safe, sterile. The tourist bubble keeps real Guatemala out.",bestFor:"Perfect for safety-conscious people who enjoy Guatemalan culture with colonial architecture.",secretTip:"La Merced neighborhood not Parque Central — cheaper restaurants, no tourist prices, same beauty."},
+  {city:"Siem Reap",country:"Cambodia",pulse:5,redTape:4,thirst:5,laptopSafety:6,expatRatio:7,wealth:9,air:8,walk:5,political:"Conservative",internet:6,soul:"Angkor-Schatten",truth:"The temples are breathtaking. The tourism economy built around them: not so much.",bestFor:"Perfect for temple enthusiasts who want Khmer culture, world-class architecture, and cheap living.",secretTip:"Angkor at 5:30am — sunrise, no tourists, guards nod at you."},
+  {city:"Uvita",country:"Costa Rica",pulse:2,redTape:5,thirst:4,laptopSafety:8,expatRatio:6,wealth:5,air:9,walk:2,political:"Liberal",internet:5,soul:"Jungle-Off-Grid",truth:"Without a 4x4: trapped. Roads in rainy season: rivers. Internet: occasional surprise.",bestFor:"Perfect for eco fans who want Costa Rica's wilderness, whale watching, and absolute off-grid feeling.",secretTip:"Ballena Marine Park on Mondays — same park fee, minimal tourists, whales still visible."},
+  {city:"Luang Prabang",country:"Laos",pulse:2,redTape:4,thirst:3,laptopSafety:7,expatRatio:5,wealth:9,air:9,walk:6,political:"Conservative",internet:4,soul:"Monastery-Slow-Life",truth:"Monks at 5am, curfew at 11pm, internet like 2003. The most beautiful cage in Asia.",bestFor:"Perfect for slow-travel philosophers seeking Buddhist silence, temple culture, and Mekong sunsets.",secretTip:"Talat Dala market at 6am — monks, locals, no staged tourism, real city awakening."},
+  {city:"Holbox",country:"Mexico",pulse:2,redTape:5,thirst:6,laptopSafety:6,expatRatio:7,wealth:6,air:10,walk:2,political:"Liberal",internet:3,soul:"Sand-and-No-Signal",truth:"No cars, no roads, no internet. Paradise or productivity black hole.",bestFor:"Perfect for digital detox seekers who want a car-free island, bioluminescence, and total seclusion.",secretTip:"North coast not the center — flamingos, solitude, no hotel — just beach and silence."},
+  {city:"Sayulita",country:"Mexico",pulse:4,redTape:5,thirst:7,laptopSafety:7,expatRatio:7,wealth:6,air:9,walk:5,political:"Liberal",internet:6,soul:"Surf-Hippie-Overflow",truth:"Raw sewage in the ocean. Instagram filters hide the smell. Surfers come anyway.",bestFor:"Perfect for surf hippies who combine Mexican village vibes with an international community.",secretTip:"San Francisco (neighboring village) — 10min away, same beach, no fuss, half the price."},
+  {city:"Kotor",country:"Montenegro",pulse:3,redTape:4,thirst:5,laptopSafety:9,expatRatio:6,wealth:8,air:9,walk:7,political:"Conservative",internet:7,soul:"Medieval-Postcard",truth:"2,000 residents in the old town. Cruise ships vomit 10,000 tourists daily.",bestFor:"Perfect for medieval aesthetes who love Adriatic beauty, fortress walls, and cats.",secretTip:"Fortress wall at 7am — cruise ships still docked, no tourists, best view for free."},
+  {city:"Georgetown",country:"Guyana",pulse:5,redTape:6,thirst:4,laptopSafety:5,expatRatio:4,wealth:7,air:7,walk:5,political:"Liberal",internet:5,soul:"Oil-Boom-Forgotten",truth:"Oil billions arrive, infrastructure stays broken. Progress: slow as molasses.",bestFor:"Perfect for oil industry professionals seeking the English-speaking Caribbean boom market.",secretTip:"Stabroek Market area for food — cheapest and most authentic Guyana right in the city."},
+  {city:"Paramaribo",country:"Suriname",pulse:5,redTape:6,thirst:4,laptopSafety:6,expatRatio:4,wealth:7,air:8,walk:6,political:"Liberal",internet:5,soul:"Forgotten-Multicultural",truth:"Hindu, Muslim, Christian, Jewish — all peacefully coexisting and completely invisible to the world.",bestFor:"Perfect for the curious who want to explore South America's most hidden multicultural society.",secretTip:"Waterkant in the evening — colonial wooden architecture, Surinamese rum, most relaxed capital promenade."},
+  {city:"Funchal",country:"Portugal",pulse:3,redTape:4,thirst:3,laptopSafety:9,expatRatio:5,wealth:7,air:8,walk:7,political:"Liberal",internet:8,soul:"Subtropical-Retiree-Life",truth:"Ideal for the over-60s. Under 30: you are the attraction. The only young person for miles.",bestFor:"Perfect for peace seekers who want to combine subtropical climate, nature, and NHR tax optimization.",secretTip:"Câmara de Lobos not Funchal center — Churchill painted here, cheapest poncha bars, no tourists."},
+  {city:"Nha Trang",country:"Vietnam",pulse:5,redTape:4,thirst:6,laptopSafety:7,expatRatio:7,wealth:8,air:9,walk:6,political:"Conservative",internet:7,soul:"Beach-Party-Overflow",truth:"Russian mass tourism has aesthetically colonized the city. Locals have given up.",bestFor:"Perfect for beach people seeking Vietnamese coastal charm despite growing mass tourism.",secretTip:"Bãi Dài Beach not the main beach — 30min drive, almost no tourists, crystal clear water."},
+  {city:"Tarifa",country:"Spain",pulse:3,redTape:4,thirst:5,laptopSafety:9,expatRatio:6,wealth:7,air:8,walk:6,political:"Liberal",internet:7,soul:"Wind-Hell-Paradise",truth:"Kitesurfer mecca. Wind 300 days a year. Your laptop literally takes flight.",bestFor:"Perfect for kite and wind surfers who want Europe's best wind spot and Spanish small-town life.",secretTip:"Live in the old town core not the beachfront promenade — cheaper rents, wind shelter, real residents."},
+  {city:"Ponta Delgada",country:"Portugal",pulse:2,redTape:4,thirst:3,laptopSafety:9,expatRatio:5,wealth:8,air:7,walk:6,political:"Liberal",internet:7,soul:"Atlantic-Bunker",truth:"Middle of the Atlantic. Flights: expensive and rare. Why you're here: a valid question.",bestFor:"Perfect for remote workers seeking tax breaks, Atlantic air, and total peace.",secretTip:"Furnas not the city center — hot springs, caldeira, cheapest restaurants, locals cook in the volcanic ground."},
+  {city:"Skopje",country:"North Macedonia",pulse:5,redTape:5,thirst:4,laptopSafety:8,expatRatio:4,wealth:8,air:7,walk:7,political:"Conservative",internet:7,soul:"Fake-Antique-Capital",truth:"€200 million for giant statues of Alexander the Great. Healthcare budget: zero.",bestFor:"Perfect for Balkan explorers seeking the cheapest European city life and Macedonian cuisine.",secretTip:"Čaršija old bazaar not the center — Ottoman quarter, cheapest food, real craftsmen."},
+  {city:"Timișoara",country:"Romania",pulse:5,redTape:4,thirst:5,laptopSafety:8,expatRatio:4,wealth:9,air:6,walk:8,political:"Liberal",internet:7,soul:"EU-Candidate-Raw-Diamond",truth:"Cheap, growing, underrated. Infrastructure improving faster than its reputation.",bestFor:"Perfect for EU pioneers seeking Romanian growth potential and affordable quality of life.",secretTip:"Fabric quarter not the center — Romania's most up-and-coming creative scene, cheapest apartments."},
+  {city:"Iași",country:"Romania",pulse:4,redTape:4,thirst:5,laptopSafety:8,expatRatio:4,wealth:9,air:5,walk:7,political:"Conservative",internet:7,soul:"Student-Underdog",truth:"Romania's second city, first-class ignored by nomads. Undeservedly.",bestFor:"Perfect for budget-conscious people who want Eastern European charm, student energy, and the cheapest EU life.",secretTip:"Copou quarter with the university — cheapest bars in Romania, parks, Eminescu's linden tree as landmark."},
+  {city:"Huatulco",country:"Mexico",pulse:2,redTape:5,thirst:5,laptopSafety:8,expatRatio:5,wealth:8,air:10,walk:4,political:"Liberal",internet:5,soul:"Discovered-and-Forgotten",truth:"Club Med enclave in wild Oaxaca. Neither village nor city. Tourist no-man's-land.",bestFor:"Perfect for Mexico fans seeking untouched Pacific bays without mass tourism.",secretTip:"Bahía Chachacual by boat — no road access, no tourists, white sand, sea turtle nesting site."},
+  {city:"Apia",country:"Samoa",pulse:2,redTape:5,thirst:3,laptopSafety:7,expatRatio:3,wealth:6,air:10,walk:3,political:"Conservative",internet:4,soul:"Pacific-End-of-the-World",truth:"5,000km to the nearest tech hub. Internet: a matter of prayer. Community: tight and warm.",bestFor:"Perfect for Pacific dreamers seeking Polynesian warmth, Faasamoa culture, and total deceleration.",secretTip:"Lalomanu Beach — 1.5h drive, traditional fale accommodation right on the sea, almost untouched."},
+  {city:"Windhoek",country:"Namibia",pulse:3,redTape:5,thirst:3,laptopSafety:8,expatRatio:3,wealth:6,air:9,walk:5,political:"Conservative",internet:6,soul:"Clean-Silence",truth:"Africa's tidiest capital. Also Africa's loneliest expat experience.",bestFor:"Perfect for Africa newcomers who want to use Africa's safest, cleanest capital as a base.",secretTip:"Katutura Township Market on Saturdays — cheapest meat in Namibia, braai culture, real Windhoek pulse."},
+  {city:"Dar es Salaam",country:"Tanzania",pulse:7,redTape:7,thirst:5,laptopSafety:4,expatRatio:5,wealth:6,air:8,walk:4,political:"Conservative",internet:5,soul:"East-Africa-Gateway",truth:"Heat and traffic merge into one. Port energy, infrastructure lottery.",bestFor:"Perfect for East African entrepreneurs seeking a trading port, Swahili culture, and a growing middle class.",secretTip:"Masaki not Kariakoo — expat area, best restaurants, ocean views, safer for foreigners."},
+  {city:"Colombo",country:"Sri Lanka",pulse:7,redTape:6,thirst:5,laptopSafety:6,expatRatio:6,wealth:7,air:7,walk:6,political:"Conservative",internet:7,soul:"Post-Crash-Comeback",truth:"Economic crisis 2022: scars still visible. Value for money improves monthly.",bestFor:"Perfect for Asia explorers who want to witness Sri Lanka's comeback from economic crisis early.",secretTip:"Pettah Market first thing in the morning — cheapest spices and vegetables, colonial bazaar, no tourists."},
+  {city:"Accra",country:"Ghana",pulse:7,redTape:6,thirst:6,laptopSafety:5,expatRatio:6,wealth:6,air:8,walk:5,political:"Liberal",internet:5,soul:"West-Africa-Hub",truth:"Gateway to West Africa. Expats come for the jollof rice and the welcome. Often stay.",bestFor:"Perfect for Pan-Africanists who want stable democracy, momentum, and Ghanaian warmth.",secretTip:"Osu not Cantonments — best nightlife in Ghana, cheapest jollof rice, locals' energy."},
+  {city:"Almaty",country:"Kazakhstan",pulse:7,redTape:6,thirst:6,laptopSafety:7,expatRatio:5,wealth:7,air:4,walk:6,political:"Conservative",internet:7,soul:"Steppe-Metropolis",truth:"VPN always on. Surveillance: as casual as talking about the weather. Biggest city you never planned to visit.",bestFor:"Perfect for Central Asia explorers seeking Soviet aesthetics, Tian Shan mountains, and affordability.",secretTip:"Shymbulak in summer — cable car up, alpine hiking, 30min from the city, almost no tourists."},
+  {city:"Buenos Aires",country:"Argentina",pulse:9,redTape:8,thirst:10,laptopSafety:6,expatRatio:8,wealth:7,air:7,walk:9,political:"Liberal",internet:7,soul:"Passionate-Dysfunction",truth:"Inflation 120%+. Your budget shrinks while you breathe. Tango and tears simultaneously.",bestFor:"Perfect for tango lovers who want to combine European flair with South American passion.",secretTip:"Milonga in San Telmo not tourist shows — free entry, real tangueros, dancing until 4am."},
+  {city:"Belgrade",country:"Serbia",pulse:8,redTape:3,thirst:9,laptopSafety:8,expatRatio:8,wealth:9,air:6,walk:7,political:"Conservative",internet:8,soul:"Balkan-Party-Anarchy",truth:"Cheapest party city in Europe. Techno until Monday. Liver and bank account suffer simultaneously.",bestFor:"Perfect for nightlife enthusiasts seeking Europe's cheapest party city and a relaxed culture.",secretTip:"Savamala not Skadarlija — art scene, river boats, Europe's cheapest club drinks, no dress code."},
+  {city:"Bogotá",country:"Colombia",pulse:8,redTape:6,thirst:8,laptopSafety:5,expatRatio:7,wealth:7,air:4,walk:7,political:"Liberal",internet:7,soul:"Altitude-Rush-Capital",truth:"3,000m altitude. Your body needs 2 weeks to understand what's happening. After that: love.",bestFor:"Perfect for culture lovers seeking Latin American museums, coffee scene, and urban energy at altitude.",secretTip:"La Candelaria daytime only — Botero Museum free, best ajiaco, nights only with a guide."},
+  {city:"Kyiv",country:"Ukraine",pulse:9,redTape:6,thirst:8,laptopSafety:7,expatRatio:7,wealth:8,air:5,walk:8,political:"Liberal",internet:7,soul:"Resilient-Capital",truth:"Air raid alarm app on every phone. Shelter locations memorized. Life goes on.",bestFor:"Perfect for the resilient who seek a European city in reconstruction and extraordinary community spirit.",secretTip:"Podil not Shevchenkivskyj — youngest scene, cheapest bars, on the Dnipro, strongest community energy."},
+  {city:"Tashkent",country:"Uzbekistan",pulse:5,redTape:7,thirst:4,laptopSafety:7,expatRatio:3,wealth:8,air:6,walk:6,political:"Conservative",internet:6,soul:"Silk-Road-Reboot",truth:"Opens up to tourism while remaining a surveillance state. Schizophrenic transformation.",bestFor:"Perfect for Silk Road fans who want to experience Central Asian cuisine, Soviet modernism, and opening up.",secretTip:"Chorsu Bazaar in the morning — biggest Central Asian bazaar, cheapest samsa, spices direct from the vendors."},
+  {city:"Yerevan",country:"Armenia",pulse:6,redTape:5,thirst:6,laptopSafety:8,expatRatio:7,wealth:8,air:6,walk:7,political:"Liberal",internet:7,soul:"Cognac-and-Conflict",truth:"The Azerbaijan conflict is never far away. But the brandy is good, food fantastic, locals warm.",bestFor:"Perfect for culture explorers seeking Armenian history, brandy culture, and Caucasian warmth.",secretTip:"Vernissage Market on Sundays — crafts, Soviet memorabilia, cheapest pomegranate wine bottles."},
+  {city:"Addis Ababa",country:"Ethiopia",pulse:8,redTape:8,thirst:5,laptopSafety:4,expatRatio:4,wealth:8,air:7,walk:4,political:"Conservative",internet:4,soul:"African-Headquarters",truth:"Seat of the African Union. Power cuts daily. You learn Amharic or you lose.",bestFor:"Perfect for Africa diplomats and NGO professionals who use Africa's diplomatic capital as a base.",secretTip:"Tomoca Coffee in the original shop — Ethiopia's oldest café, coffee for 10 cents, drink standing like locals."},
+  {city:"Dakar",country:"Senegal",pulse:7,redTape:6,thirst:6,laptopSafety:4,expatRatio:5,wealth:7,air:9,walk:5,political:"Liberal",internet:5,soul:"Teranga-Energy",truth:"West Africa's warmest people. Power gone, roads broken, internet: sometimes.",bestFor:"Perfect for West Africa newcomers seeking Teranga warmth, Atlantic coast, and creativity.",secretTip:"Île de Ngor by pirogue — 5 minute ride, calmest beach in Dakar, fish restaurants at the water."},
+  {city:"Havana",country:"Cuba",pulse:8,redTape:10,thirst:7,laptopSafety:2,expatRatio:3,wealth:6,air:9,walk:7,political:"Conservative",internet:2,soul:"Frozen-Dystopia",truth:"No internet, no capital, no criticism. In return: the best 1950s cars and rum.",bestFor:"Perfect for time travelers who want to experience 1950s aesthetics, rum culture, and lived socialist reality.",secretTip:"Casa particular not a hotel — cheaper, real family, breakfast included, insider tips included."},
+  {city:"La Paz",country:"Bolivia",pulse:7,redTape:7,thirst:4,laptopSafety:5,expatRatio:5,wealth:9,air:7,walk:5,political:"Liberal",internet:4,soul:"Highest-Capital-Ordeal",truth:"3,600m altitude. Day 1: headache. Day 3: can’t breathe. Day 7: you love it anyway.",bestFor:"Perfect for altitude researchers seeking the world's highest capital, cholita culture, and Andean landscape.",secretTip:"Mercado de las Brujas — witch market, not a tourist trap but real Aymara ceremonial trade."},
+  {city:"Asunción",country:"Paraguay",pulse:6,redTape:6,thirst:5,laptopSafety:7,expatRatio:4,wealth:9,air:8,walk:5,political:"Conservative",internet:6,soul:"Tax-Haven-Forgotten",truth:"Steuern: 10%. Infrastruktur: 10 Jahre hinter. Hitze: konstant. Langeweile: gratis.",bestFor:"Perfect for tax optimizers seeking South America's cheapest living, a tax haven, and a quiet life.",secretTip:"Mercado 4 for food — cheapest sopa paraguaya, no tourists, real Asunción market atmosphere."},
+  {city:"Montevideo",country:"Uruguay",pulse:4,redTape:5,thirst:5,laptopSafety:9,expatRatio:5,wealth:5,air:6,walk:8,political:"Liberal",internet:7,soul:"Boring-Liberal",truth:"South America's quietest democracy. Safe, expensive, leisurely. Retiree dream, nomad whatever.",bestFor:"Perfect for South America peace seekers who want Uruguay's stable democracy and relaxed coastal city.",secretTip:"Ciudad Vieja in the evening — hear murga rehearsals through open windows, cheap milk bars, safest old town."},
+  {city:"Santiago",country:"Chile",pulse:5,redTape:5,thirst:6,laptopSafety:8,expatRatio:5,wealth:5,air:4,walk:7,political:"Liberal",internet:8,soul:"Andean-Order",truth:"Richest city in South America with an open wound: inequality. The Estallido Social left scars.",bestFor:"Perfect for Andes fans who want a South American metropolis with European stability and skiing.",secretTip:"Barrio Italia not Providencia — vintage shops, cheapest restaurants, creative scene without tourist prices."},
+  {city:"Lima",country:"Peru",pulse:8,redTape:6,thirst:7,laptopSafety:6,expatRatio:6,wealth:6,air:2,walk:6,political:"Liberal",internet:7,soul:"Gastronomy-without-Sun",truth:"9 months of grey veil over the city. AQI: toxic. Food: world's best. Pure contradiction.",bestFor:"Perfect for gastro-obsessives who want world-class cuisine, ceviche culture, and Peruvian depth.",secretTip:"Barranco not Miraflores — artists' neighborhood, cheaper cevicherías, cliffs above the Pacific."},
+  {city:"Quito",country:"Ecuador",pulse:5,redTape:6,thirst:5,laptopSafety:7,expatRatio:5,wealth:8,air:7,walk:6,political:"Conservative",internet:6,soul:"Equator-Altitude-Rush",truth:"UNESCO old town: stunning. Security situation: requires research. Altitude: vertigo-inducing.",bestFor:"Perfect for colonial old town fans seeking UNESCO heritage, volcano views, and Ecuadorian culture.",secretTip:"La Floresta not Mariscal — art galleries, cheap restaurants, expats who don't act like tourists."},
+  {city:"Baku",country:"Azerbaijan",pulse:6,redTape:6,thirst:4,laptopSafety:8,expatRatio:5,wealth:6,air:7,walk:6,political:"Conservative",internet:7,soul:"Oil-Glamour-Dictatorship",truth:"Shiny facade, tight political freedom. Criticism lands you in serious trouble.",bestFor:"Perfect for oil wealth observers who want to witness Azerbaijani modernization and Caucasian cuisine.",secretTip:"Icheri Sheher in the morning — caravanserai, Persian baths, no tourists before 10am, free entry."},
+  {city:"Islamabad",country:"Pakistan",pulse:4,redTape:7,thirst:2,laptopSafety:7,expatRatio:3,wealth:8,air:7,walk:5,political:"Conservative",internet:6,soul:"Planned-Capital-Calm",truth:"Pakistan's safest city. VPN mandatory. Political volcano under a well-manicured surface.",bestFor:"Perfect for Pakistan diplomats seeking the country's safest, greenest, and most orderly city.",secretTip:"Daman-e-Koh in the evening — Margalla Hills, panorama over Islamabad at sunset, no entry fee."},
+  {city:"Karachi",country:"Pakistan",pulse:10,redTape:9,thirst:4,laptopSafety:2,expatRatio:5,wealth:7,air:3,walk:3,political:"Conservative",internet:4,soul:"Megacity-Survival",truth:"25 million, no power, 45°C heat, variable safety. For adventurers who mean every word of it.",bestFor:"Perfect for hardcore urbanites who want to experience Pakistan's economic engine and maximum megacity energy.",secretTip:"Burns Road for dinner — Karachi's oldest food street, best nihari and biryani, locals only."},
+  {city:"Yangon",country:"Myanmar",pulse:7,redTape:9,thirst:4,laptopSafety:3,expatRatio:4,wealth:8,air:7,walk:5,political:"Conservative",internet:3,soul:"Junta-Shadow",truth:"Military coup 2021: tourism collapsed, internet cut, citizens in resistance. Not now.",bestFor:"Perfect for Burma enthusiasts who appreciated Shwedagon Pagoda and colonial architecture before tourism.",secretTip:"Sule Pagoda area — historic center, colonial buildings, but monitor the security situation."},
+  {city:"Ulaanbaatar",country:"Mongolia",pulse:6,redTape:7,thirst:3,laptopSafety:6,expatRatio:3,wealth:8,air:2,walk:4,political:"Conservative",internet:5,soul:"Steppe-Metropolis-Smog",truth:"Winter: −40°C, PM2.5 at lethal levels. Summer: breathtaking steppe. The rest: forget it.",bestFor:"Perfect for steppe nomad romantics seeking Mongolian culture, nature, and a nomadic experience.",secretTip:"Gandan Monastery early in the morning — monks praying, no tourists, warmest encounter in the city."},
+  {city:"Kathmandu",country:"Nepal",pulse:7,redTape:7,thirst:4,laptopSafety:4,expatRatio:6,wealth:9,air:3,walk:4,political:"Liberal",internet:4,soul:"Himalaya-Gateway-Chaos",truth:"Power cut daily. Dust permanent. Traffic: nightmare. Mountains around the corner: forgives everything.",bestFor:"Perfect for Himalaya dreamers who want to use Nepal as a basecamp for trekking and spiritual depth.",secretTip:"Patan Durbar Square not Thamel — real Newari cuisine, less tourist hell, 15min taxi ride."},
+  {city:"Dhaka",country:"Bangladesh",pulse:10,redTape:9,thirst:4,laptopSafety:3,expatRatio:3,wealth:8,air:2,walk:2,political:"Conservative",internet:4,soul:"RMG-Megacity-Overwhelm",truth:"Densest megacity on earth. Traffic, heat, sewage, noise. Industry at the cost of everything.",bestFor:"Perfect for textile industry insiders who want to experience Bengali culture, resilience, and the world's densest megacity.",secretTip:"Old Dhaka rickshaw tour — the only sensible way to explore the historic center."},
+  {city:"Riyadh",country:"Saudi Arabia",pulse:5,redTape:6,thirst:2,laptopSafety:9,expatRatio:6,wealth:4,air:7,walk:4,political:"Conservative",internet:8,soul:"Desert-Modernization-Forced",truth:"Women can drive since 2018. Holding hands still carries arrest risk.",bestFor:"Perfect for Gulf career-builders who prioritize tax-free income and rapid wealth accumulation.",secretTip:"Al-Zal Market not malls — traditional gold quarter, authentic Saudi cuisine, genuine contrast."},
+  {city:"Beirut",country:"Lebanon",pulse:9,redTape:10,thirst:8,laptopSafety:2,expatRatio:6,wealth:5,air:9,walk:7,political:"Liberal",internet:2,soul:"Wounded-Diva",truth:"Economy collapsing. Power 2 hours daily. Currency worthless. Party culture as a survival strategy.",bestFor:"Perfect for crisis-resistant people who love the Arab cultural capital and Phoenician energy despite the chaos.",secretTip:"Gemmayze after midnight — best bar street in the Middle East, locals celebrating the apocalypse."},
+  {city:"Tunis",country:"Tunisia",pulse:6,redTape:7,thirst:5,laptopSafety:7,expatRatio:4,wealth:8,air:9,walk:7,political:"Conservative",internet:6,soul:"Post-Revolution-Regression",truth:"The Arab Spring started here. Democracy: abolished again 10 years later. Painful.",bestFor:"Perfect for Maghreb fans who want to combine Arab medina culture with Mediterranean coast and cheap prices.",secretTip:"Sidi Bou Said not Tunis center — white-blue village, cheapest mint tea with pine nuts."},
+  {city:"Casablanca",country:"Morocco",pulse:7,redTape:6,thirst:5,laptopSafety:7,expatRatio:5,wealth:7,air:8,walk:6,political:"Conservative",internet:7,soul:"Atlantic-Morocco-Rush",truth:"Economic metropolis without tourist charm. Real business pulse, zero romance.",bestFor:"Perfect for Maghreb entrepreneurs seeking Morocco's economic engine and business community.",secretTip:"Quartier Gauthier not the Corniche — best restaurants in Casablanca, locals' cafés, no tourist traps."},
+  {city:"Marrakech",country:"Morocco",pulse:7,redTape:6,thirst:4,laptopSafety:7,expatRatio:7,wealth:6,air:9,walk:7,political:"Conservative",internet:7,soul:"Medina-Labyrinth-Price",truth:"Tourists pay 5x local prices. If you don't negotiate: you're liked, but fleeced.",bestFor:"Perfect for sensory overload fans seeking medina chaos, souk culture, and riad aesthetics.",secretTip:"Mouassine quarter not Jemaa el-Fna — locals' craftsmanship, cheaper riads, less tourist density."},
+  {city:"Harare",country:"Zimbabwe",pulse:6,redTape:8,thirst:4,laptopSafety:4,expatRatio:4,wealth:6,air:8,walk:5,political:"Conservative",internet:4,soul:"Resilient-Capital-Ordeal",truth:"Currency doesn’t work. Power intermittent. People: resilient in a way that makes you feel ashamed.",bestFor:"Perfect for Zimbabwe insiders who seek a resilient society and nature access despite all adversity.",secretTip:"Mbare Musika Market — cheapest food in Harare, most pulsating market bustle, real Zimbabwe pulse."},
+  {city:"Antananarivo",country:"Madagascar",pulse:7,redTape:9,thirst:3,laptopSafety:3,expatRatio:3,wealth:8,air:6,walk:3,political:"Conservative",internet:3,soul:"Forgotten-Island-Capital",truth:"Extremste Armut neben Lemuren-Tourismus. Infrastruktur aus einer anderen Epoche.",bestFor:"Perfect for lemur lovers and biodiversity researchers seeking Madagascar's unique ecosystem.",secretTip:"Analakely Market not tourist shops — real prices, handmade raffia baskets direct from the makers."},
+  {city:"Luanda",country:"Angola",pulse:9,redTape:9,thirst:4,laptopSafety:3,expatRatio:4,wealth:1,air:7,walk:2,political:"Conservative",internet:3,soul:"Oil-Paradox-Dystopia",truth:"Teuerste Stadt Afrikas. Gehst du Einkaufen ohne Reichtum: du gehst hungrig.",bestFor:"Perfect for Angola oil industry expats who want to experience the African boom despite astronomical prices.",secretTip:"Ilha de Luanda — sand spit with the best restaurants, fish straight from the boat, sunset free."},
+  {city:"Bishkek",country:"Kyrgyzstan",pulse:5,redTape:6,thirst:4,laptopSafety:7,expatRatio:4,wealth:9,air:5,walk:5,political:"Conservative",internet:5,soul:"Steppe-Underdog",truth:"Everything cheap, little luxury. Expat scene: a handful of enthusiasts and NGO staff.",bestFor:"Perfect for Central Asia backpackers seeking the cheapest living and Tian Shan mountain access.",secretTip:"Osh Bazaar — cheapest food in Central Asia, lagman for 50 som, locals' market without tourist markup."},
+  {city:"Dushanbe",country:"Tajikistan",pulse:4,redTape:7,thirst:3,laptopSafety:6,expatRatio:3,wealth:9,air:7,walk:4,political:"Conservative",internet:4,soul:"Pamir-Gate-Loneliness",truth:"Gateway to the Pamir. Authoritarian, poor, breathtakingly beautiful once you get out. Visa: a migraine.",bestFor:"Perfect for Pamir Highway travelers seeking Tajikistan's mountain culture and Silk Road heritage.",secretTip:"Rudaki Park in the evening — fountains, strollers, tea house culture, Central Asia's warmest city people."},
+  {city:"N'Djamena",country:"Chad",pulse:10,redTape:10,thirst:3,laptopSafety:1,expatRatio:2,wealth:7,air:9,walk:2,political:"Conservative",internet:1,soul:"Frontier-Existenz",truth:"Average temperature 42°C. Power supply: wishful thinking. Internet: myth. Experts only.",bestFor:"Only for experienced crisis-region expats and humanitarian professionals with high-risk experience.",secretTip:"Marché Central for groceries — cheapest local prices, always go with a trusted local contact."},
+  {city:"Kabul",country:"Afghanistan",pulse:10,redTape:10,thirst:1,laptopSafety:1,expatRatio:1,wealth:8,air:6,walk:1,political:"Conservative",internet:2,soul:"Post-Chaos-Tristesse",truth:"Taliban control since 2021. For Western expats: practically impossible. For others: extreme risk.",bestFor:"Only for humanitarian professionals with high-security briefing and institutional backing.",secretTip:"No tip currently defensible — security situation makes individual exploration irresponsible."},
+  {city:"Pyongyang",country:"North Korea",pulse:1,redTape:10,thirst:1,laptopSafety:1,expatRatio:1,wealth:1,air:5,walk:3,political:"Conservative",internet:1,soul:"Orwellsches-Museum",truth:"Visitor visa for guided groups only. Everything is fake. Everything is monitored. Unique. Not recommended.",bestFor:"Perfect for nobody who values freedom — unique only as a guided group experience.",secretTip:"Mangyongdae Funfair — only place where brief interaction with locals is possible, guides briefly relaxed."},
+  {city:"Mogadishu",country:"Somalia",pulse:10,redTape:10,thirst:2,laptopSafety:1,expatRatio:1,wealth:5,air:9,walk:1,political:"Conservative",internet:2,soul:"Anarchic-Ground-Zero",truth:"No functioning government. Building from nothing. Journalists and NGO veterans only.",bestFor:"Only for journalists and humanitarian professionals with security protocol and local support.",secretTip:"Lido Beach — Somalis love it, family evenings on the sand, the only sign of normalcy in the city."},
+  {city:"Caracas",country:"Venezuela",pulse:10,redTape:9,thirst:7,laptopSafety:1,expatRatio:5,wealth:6,air:8,walk:3,political:"Conservative",internet:3,soul:"Collapsed-Dream-State",truth:"Oil state in free fall. Blackouts, hyperinflation, mass exodus. Courage or insanity required.",bestFor:"Only for Venezuela insiders with networks who seek the wealth-collapse contrast up close.",secretTip:"Altamira not Petare — safest neighborhood, best restaurants, the only Caracas that works for expats."},
+  {city:"Port-au-Prince",country:"Haiti",pulse:10,redTape:10,thirst:3,laptopSafety:1,expatRatio:2,wealth:6,air:8,walk:1,political:"Conservative",internet:2,soul:"Catastrophe-Capital",truth:"Gang control over entire neighborhoods. No stable state. Humanitarian crisis as permanent condition.",bestFor:"Only for humanitarian professionals with evacuation plan and deep Haiti network.",secretTip:"No tip currently defensible — gang control makes navigation without local expertise life-threatening."},
+  {city:"Kinshasa",country:"DRC",pulse:10,redTape:10,thirst:4,laptopSafety:2,expatRatio:3,wealth:6,air:7,walk:2,political:"Conservative",internet:2,soul:"Megacity-Off-Grid",truth:"20 million people in a city without a functioning power grid. Chaos with a human pulse.",bestFor:"Only for Congo insiders with institutional backing who want to experience Central Africa's energy.",secretTip:"Marché de la Liberté for food — cheapest pondu and fufu, real Kinshasa market pulse."},
+  {city:"Tripoli",country:"Libya",pulse:9,redTape:10,thirst:2,laptopSafety:2,expatRatio:2,wealth:6,air:9,walk:3,political:"Conservative",internet:2,soul:"Post-War-Limbo",truth:"Parallel governments, militia control, no tourism. For expats: extremely high risk.",bestFor:"Only for oil industry professionals and diplomats with security infrastructure.",secretTip:"No tip currently defensible — security situation too volatile for recommendations."},
+  {city:"Sanaa",country:"Yemen",pulse:10,redTape:10,thirst:1,laptopSafety:1,expatRatio:1,wealth:7,air:8,walk:2,political:"Conservative",internet:1,soul:"War-Zone-Daily-Life",truth:"Most active conflict in the region. Humanitarian catastrophe. Not a destination — a warning.",bestFor:"Only for Yemen experts with a humanitarian mandate and high-security experience.",secretTip:"No tip currently defensible — active conflict makes any stay a security risk."},
+  {city:"Homs",country:"Syria",pulse:9,redTape:10,thirst:1,laptopSafety:1,expatRatio:1,wealth:7,air:7,walk:2,political:"Conservative",internet:1,soul:"Bomb-Ruins-Reborn",truth:"Rebuilding after destruction. Slow return. For regular expats: not recommended.",bestFor:"Only for reconstruction professionals and Syrian returnees — not a regular expat destination.",secretTip:"No tip currently defensible — infrastructure in reconstruction, security situation complex."},
+  {city:"Bangui",country:"CAR",pulse:10,redTape:10,thirst:2,laptopSafety:1,expatRatio:1,wealth:7,air:8,walk:1,political:"Conservative",internet:1,soul:"Forgotten-Conflict-State",truth:"One of the poorest states in the world. Armed violence is normal. Expats: humanitarian organizations only.",bestFor:"Only for NGO veterans with high-risk experience in the Central African Republic.",secretTip:"No tip currently defensible — armed groups active, no safe city navigation possible."},
+];
+
+
+const QUESTIONS_POOL = [
+
+  // ── Q1–5: laptopSafety ──────────────────────────────────────────────────
+  {
+    id:1, cat:"🔒 Safety & Survival", attr:"laptopSafety",
+    text:"Can I stumble home drunk with an iPhone 15 in my hand at 3am?",
+    opts:[
+      {tier:"elite",     label:"Sure. The cops will probably drive you home and tuck you in."},
+      {tier:"sweet",     label:"Fine, as long as you're not doing it in a Gucci suit through a dark alley."},
+      {tier:"adventure", label:"Only if you look like you have nothing worth taking. Walk fast."},
+      {tier:"hardcore",  label:"Your iPhone is gone, your kidneys are gone, and your shoes probably too."},
+    ]
+  },
+  {
+    id:2, cat:"🔒 Safety & Survival", attr:"laptopSafety",
+    text:"Does my MacBook survive a 5-minute coffee break on the table while I use the bathroom?",
+    opts:[
+      {tier:"elite",     label:"Still there after two hours. The waiter even dusted it off."},
+      {tier:"sweet",     label:"In a decent café, yes. At the bus station, use your judgment."},
+      {tier:"adventure", label:"Only if you threaten the table neighbor with the life of your firstborn."},
+      {tier:"hardcore",  label:"It's already on the black market before you've opened the bathroom door."},
+    ]
+  },
+  {
+    id:3, cat:"🔒 Safety & Survival", attr:"laptopSafety",
+    text:"Can I stroll through downtown with a Rolex without becoming a target?",
+    opts:[
+      {tier:"elite",     label:"Everyone here wears one. The cheapest starts at 40k."},
+      {tier:"sweet",     label:"Fine, but maybe not at 3am down the wrong street."},
+      {tier:"adventure", label:"You wouldn't be the first victim of a spontaneous watch transfer."},
+      {tier:"hardcore",  label:"You've already been robbed. You just don't know it yet."},
+    ]
+  },
+  {
+    id:4, cat:"🔒 Safety & Survival", attr:"laptopSafety",
+    text:"How safe is my luggage in the hotel if I leave the door open?",
+    opts:[
+      {tier:"elite",     label:"The concierge returns it on a silver tray with a formal apology."},
+      {tier:"sweet",     label:"Nothing valuable on the table and you're fine."},
+      {tier:"adventure", label:"Your charging cable is gone. Probably not an accident."},
+      {tier:"hardcore",  label:"You come back and the bed is gone too."},
+    ]
+  },
+  {
+    id:5, cat:"🔒 Safety & Survival", attr:"laptopSafety",
+    text:"What happens when I pull out my phone for navigation at night?",
+    opts:[
+      {tier:"elite",     label:"Nothing. Someone might ask if you need directions."},
+      {tier:"sweet",     label:"Quick glance, back in the pocket — same as anywhere."},
+      {tier:"adventure", label:"Look fast, put it away fast. This isn't Disneyland."},
+      {tier:"hardcore",  label:"That phone now belongs to someone else. Walk and don't look up."},
+    ]
+  },
+
+  // ── Q6–10: pulse (INVERTED) ──────────────────────────────────────────────
+  {
+    id:6, cat:"⚡ Energy & Chaos", attr:"pulse",
+    text:"Am I looking for Swiss graveyard silence or Saigon's honking inferno?",
+    opts:[
+      {tier:"hardcore",  label:"I want to hear birds. If a neighbor sneezes, I'm calling the cops."},
+      {tier:"adventure", label:"A bit of urban vibe is sexy, but after 10pm it's lights out."},
+      {tier:"sweet",     label:"Give me life. If it doesn't smell like exhaust and street food, I'm not awake."},
+      {tier:"elite",     label:"I want 24/7 pure, unfiltered adrenaline. Sleep is overrated."},
+    ]
+  },
+  {
+    id:7, cat:"⚡ Energy & Chaos", attr:"pulse",
+    text:"How many honking concerts per day can I still call music?",
+    opts:[
+      {tier:"hardcore",  label:"Zero. Silence is my currency."},
+      {tier:"adventure", label:"Occasionally — gives the place character. Not before 9am though."},
+      {tier:"sweet",     label:"Honking, voices, motorcycles — that's my white noise."},
+      {tier:"elite",     label:"The louder the better. I sleep with headphones AND earplugs simultaneously."},
+    ]
+  },
+  {
+    id:8, cat:"⚡ Energy & Chaos", attr:"pulse",
+    text:"Would a power outage in this city actually surprise me?",
+    opts:[
+      {tier:"hardcore",  label:"Power outage? I know the word but I've never experienced it."},
+      {tier:"adventure", label:"Rare, but the backup is always ready."},
+      {tier:"sweet",     label:"There's a Plan B. Usually. The Plan B is a candle."},
+      {tier:"elite",     label:"Electricity is a bonus here, not a standard. I own more candles than lightbulbs."},
+    ]
+  },
+  {
+    id:9, cat:"⚡ Energy & Chaos", attr:"pulse",
+    text:"Is the city still alive at 3am — or does everything shut down at 10pm?",
+    opts:[
+      {tier:"hardcore",  label:"By 10pm the sidewalk is rolled up. The silence is sacred."},
+      {tier:"adventure", label:"A few places stay open, but the energy has evaporated."},
+      {tier:"sweet",     label:"The real party starts at midnight. Before that is just warm-up."},
+      {tier:"elite",     label:"3am is rush hour. Anyone who sleeps before then misses the best part."},
+    ]
+  },
+  {
+    id:10, cat:"⚡ Energy & Chaos", attr:"pulse",
+    text:"Can I actually finish a thought in a café here?",
+    opts:[
+      {tier:"hardcore",  label:"This place is a temple of concentration. Whispering is mandatory."},
+      {tier:"adventure", label:"With headphones: yes. Without: you at least try."},
+      {tier:"sweet",     label:"Between espresso orders and street arguments — sometimes."},
+      {tier:"elite",     label:"Thoughts? Only the quick survive here. Your brain is noise."},
+    ]
+  },
+
+  // ── Q11–15: thirst ───────────────────────────────────────────────────────
+  {
+    id:11, cat:"💘 Dating & Social", attr:"thirst",
+    text:"Will I find love here or cry into my pillow alone after three days?",
+    opts:[
+      {tier:"elite",     label:"The options are so vast my thumb has RSI from swiping."},
+      {tier:"sweet",     label:"Solid middle ground. A few frogs, but a prince is statistically possible."},
+      {tier:"adventure", label:"Tough as old leather. You have to really work for a 'hello'."},
+      {tier:"hardcore",  label:"Emotional permafrost zone. Buy a cat and a Netflix subscription."},
+    ]
+  },
+  {
+    id:12, cat:"💘 Dating & Social", attr:"thirst",
+    text:"Are locals here flirty or do they look straight through me like glass?",
+    opts:[
+      {tier:"elite",     label:"You get hit on before you've even set down your luggage."},
+      {tier:"sweet",     label:"Warm if you make the first move. A smile is enough."},
+      {tier:"adventure", label:"Friendly? Yes. Romantically interested? Ask again in a year."},
+      {tier:"hardcore",  label:"You're socially invisible here. Even the barista won't learn your name."},
+    ]
+  },
+  {
+    id:13, cat:"💘 Dating & Social", attr:"thirst",
+    text:"Is the dating app scene here a hot playlist or an empty archive?",
+    opts:[
+      {tier:"elite",     label:"I need two phones because one can't match fast enough."},
+      {tier:"sweet",     label:"Decent pool — manage your expectations and you'll be rewarded."},
+      {tier:"adventure", label:"Three matches, two ghosts, one says 'hey'."},
+      {tier:"hardcore",  label:"Tinder shows me people 80km away and asks if I'm desperate."},
+    ]
+  },
+  {
+    id:14, cat:"💘 Dating & Social", attr:"thirst",
+    text:"How does a random bar conversation with a stranger end here?",
+    opts:[
+      {tier:"elite",     label:"With a phone number, a date, and breakfast."},
+      {tier:"sweet",     label:"Nice chat, maybe an Instagram follow, maybe never again."},
+      {tier:"adventure", label:"With polite disinterest and a glance at the clock."},
+      {tier:"hardcore",  label:"There is no random conversation. Strangers look away. You look away."},
+    ]
+  },
+  {
+    id:15, cat:"💘 Dating & Social", attr:"thirst",
+    text:"Is this a city for singles or do people buy double beds when they arrive?",
+    opts:[
+      {tier:"elite",     label:"Singles arrive single and leave as couples — or with a great story at least."},
+      {tier:"sweet",     label:"Both work. The city doesn't discriminate."},
+      {tier:"adventure", label:"As a single you're a social puzzle nobody wants to solve."},
+      {tier:"hardcore",  label:"As a single you'll go Buddhist or alcoholic here. Sometimes both."},
+    ]
+  },
+
+  // ── Q16–20: wealth ───────────────────────────────────────────────────────
+  {
+    id:16, cat:"💸 Budget & Lifestyle", attr:"wealth",
+    text:"Am I drinking €25 champagne in a penthouse or canned beer on the curb?",
+    opts:[
+      {tier:"elite",     label:"I demand excellence. If the waiter doesn't address me as 'Your Grace', I'm leaving."},
+      {tier:"sweet",     label:"Smart indulgence. I want to see luxury without selling a kidney for it."},
+      {tier:"adventure", label:"I'm the king of the street food strip. €3 for dinner is my ceiling."},
+      {tier:"hardcore",  label:"I live on deposit bottles and hope. Where's the nearest soup kitchen?"},
+    ]
+  },
+  {
+    id:17, cat:"💸 Budget & Lifestyle", attr:"wealth",
+    text:"With €2,500/month here, am I the local oligarch or the tragic intern?",
+    opts:[
+      {tier:"elite",     label:"You're the richest person within 30km. Everyone knows your name."},
+      {tier:"sweet",     label:"Comfortable middle-class life with occasional splurges."},
+      {tier:"adventure", label:"You get by, but luxury? That's for other people."},
+      {tier:"hardcore",  label:"That might rent you a park bench here. Half days only."},
+    ]
+  },
+  {
+    id:18, cat:"💸 Budget & Lifestyle", attr:"wealth",
+    text:"Does a nice dinner for two here cost my monthly rent or my pocket change?",
+    opts:[
+      {tier:"elite",     label:"Pocket change. I even got change back."},
+      {tier:"sweet",     label:"Something nice without googling your bank balance afterward."},
+      {tier:"adventure", label:"It was good. I eat dry bread for the next week. Worth it."},
+      {tier:"hardcore",  label:"The menu had no prices. That was the first warning sign."},
+    ]
+  },
+  {
+    id:19, cat:"💸 Budget & Lifestyle", attr:"wealth",
+    text:"Can I live well cheaply here, or do I need to be rich just to be 'normal'?",
+    opts:[
+      {tier:"elite",     label:"I live like a king on €800/month and still managed to save."},
+      {tier:"sweet",     label:"Good life for reasonable money — the math checks out."},
+      {tier:"adventure", label:"It's possible, but 'cheap' is relative — I paid half a salary for a room."},
+      {tier:"hardcore",  label:"'Normal' costs so much here I can't afford to be normal."},
+    ]
+  },
+  {
+    id:20, cat:"💸 Budget & Lifestyle", attr:"wealth",
+    text:"Will my salary earn respect or pity in this city?",
+    opts:[
+      {tier:"elite",     label:"I'm the local high roller. People hold doors open for me."},
+      {tier:"sweet",     label:"Solid middle — no envy, no pity."},
+      {tier:"adventure", label:"Oh, you work in... ah."},
+      {tier:"hardcore",  label:"People here earn in a day what I sweat for in a month."},
+    ]
+  },
+
+  // ── Q21–25: redTape (INVERTED) ───────────────────────────────────────────
+  {
+    id:21, cat:"📋 Bureaucracy & Visas", attr:"redTape",
+    text:"Visa in 5 minutes online or bribe money and three birth certificates of your great-grandmother?",
+    opts:[
+      {tier:"hardcore",  label:"One click, one smile, I'm in. One click. Done. Almost erotic."},
+      {tier:"adventure", label:"Some paperwork, but the official at least has teeth and a computer."},
+      {tier:"sweet",     label:"Block out two weeks for the stamp. Bring patience and cigarettes."},
+      {tier:"elite",     label:"Without a suitcase of cash and the minister's blood type, nothing moves here."},
+    ]
+  },
+  {
+    id:22, cat:"📋 Bureaucracy & Visas", attr:"redTape",
+    text:"Is filing taxes here an app or a full-time job with a dedicated accountant?",
+    opts:[
+      {tier:"hardcore",  label:"An app. Done in 4 minutes. I even got money back."},
+      {tier:"adventure", label:"Manageable. Some effort, no drama."},
+      {tier:"sweet",     label:"I filled out three forms to discover I had the wrong form."},
+      {tier:"elite",     label:"The tax office here is less an office and more a creative writing seminar with no graduation."},
+    ]
+  },
+  {
+    id:23, cat:"📋 Bureaucracy & Visas", attr:"redTape",
+    text:"Renting an apartment here — is that an email or a blood pact?",
+    opts:[
+      {tier:"hardcore",  label:"Digital, transparent, done in 48 hours."},
+      {tier:"adventure", label:"Contract, deposit, handover protocol — normal, fair."},
+      {tier:"sweet",     label:"Three viewings, two confirmations, one mysterious rejection. But it works out."},
+      {tier:"elite",     label:"The landlord asked for my star sign and blood type. Not joking."},
+    ]
+  },
+  {
+    id:24, cat:"📋 Bureaucracy & Visas", attr:"redTape",
+    text:"Can I open a bank account here without a notary, a priest, and a sacrifice?",
+    opts:[
+      {tier:"hardcore",  label:"Online, 10 minutes, done. Cashback card included."},
+      {tier:"adventure", label:"One branch, one ticket number, one patient staff member — done."},
+      {tier:"sweet",     label:"I need seven documents, two of which don't exist."},
+      {tier:"elite",     label:"The bank rejected me because I'm not from this country. Welcome."},
+    ]
+  },
+  {
+    id:25, cat:"📋 Bureaucracy & Visas", attr:"redTape",
+    text:"How much of your life do you sacrifice for a single government errand?",
+    opts:[
+      {tier:"hardcore",  label:"Government errands? Everything's digital. I haven't needed one during my entire stay."},
+      {tier:"adventure", label:"One morning. Exhausting but survivable."},
+      {tier:"sweet",     label:"I went twice. Both times they told me I needed something else."},
+      {tier:"elite",     label:"Kafka was right. He lived here."},
+    ]
+  },
+
+  // ── Q26–30: air ──────────────────────────────────────────────────────────
+  {
+    id:26, cat:"☀️ Air & Sunlight", attr:"air",
+    text:"How badly does bad air quality ruin you?",
+    opts:[
+      {tier:"elite",     label:"Particulate matter readings are my first Google check before packing."},
+      {tier:"sweet",     label:"I notice it, but it's not a dealbreaker."},
+      {tier:"adventure", label:"As long as I'm not coughing — I don't care."},
+      {tier:"hardcore",  label:"I lived in a megacity. I'm hardened. Bring it."},
+    ]
+  },
+  {
+    id:27, cat:"☀️ Air & Sunlight", attr:"air",
+    text:"What matters more to you — sunshine or skyline?",
+    opts:[
+      {tier:"elite",     label:"Without daily sun I turn aggressive."},
+      {tier:"sweet",     label:"I like sun, but rain doesn't break me."},
+      {tier:"adventure", label:"Four grey months and I survive. Somehow."},
+      {tier:"hardcore",  label:"I'm from a country where sun is a rumor. Darkness is my home climate."},
+    ]
+  },
+  {
+    id:28, cat:"☀️ Air & Sunlight", attr:"air",
+    text:"Would you trade quality of life for city energy?",
+    opts:[
+      {tier:"elite",     label:"Never. Clean air is non-negotiable."},
+      {tier:"sweet",     label:"Some compromise is okay, but not permanently."},
+      {tier:"adventure", label:"For the right city — yes, temporarily."},
+      {tier:"hardcore",  label:"Completely. Give me the energy, I'll trade the lungs."},
+    ]
+  },
+  {
+    id:29, cat:"☀️ Air & Sunlight", attr:"air",
+    text:"How much sun do you need to stay mentally stable?",
+    opts:[
+      {tier:"elite",     label:"Daily. My therapist calls it 'vitamin D dependency'. I call it a survival requirement."},
+      {tier:"sweet",     label:"More than the European average, less than a sunbathing addict."},
+      {tier:"adventure", label:"I manage on little. Candles and screens work fine."},
+      {tier:"hardcore",  label:"Sun is overrated. My darkest creative mode is November."},
+    ]
+  },
+  {
+    id:30, cat:"☀️ Air & Sunlight", attr:"air",
+    text:"Your tolerance for smog, dust, and exhaust in daily life?",
+    opts:[
+      {tier:"elite",     label:"Zero. I want to breathe deeply every morning without thinking about it."},
+      {tier:"sweet",     label:"Acceptable as an exception, not as a permanent state."},
+      {tier:"adventure", label:"I adapt. The human body is flexible."},
+      {tier:"hardcore",  label:"Smog is city culture. Anyone who wants clean air should move to the countryside."},
+    ]
+  },
+
+  // ── Q31–35: internet ─────────────────────────────────────────────────────
+  {
+    id:31, cat:"🌐 Internet & Infrastructure", attr:"internet",
+    text:"Is the WiFi here so stable I could run a heart surgery over Zoom?",
+    opts:[
+      {tier:"elite",     label:"I could livestream while downloading and running four meetings simultaneously."},
+      {tier:"sweet",     label:"Stable enough for everything that matters — occasional hiccups, but manageable."},
+      {tier:"adventure", label:"It lags. Not always, but always exactly when it matters."},
+      {tier:"hardcore",  label:"My email signature reads: 'Sorry for the latency — I'm alive.'"},
+    ]
+  },
+  {
+    id:32, cat:"🌐 Internet & Infrastructure", attr:"internet",
+    text:"Fiber optic or am I running my home office on prayer and hope?",
+    opts:[
+      {tier:"elite",     label:"Fiber, backup LTE, and a provider with night support."},
+      {tier:"sweet",     label:"Solid cable connection — no world record, but reliable."},
+      {tier:"adventure", label:"The router drops once a day. I've made rebooting a morning ritual."},
+      {tier:"hardcore",  label:"The internet comes and goes like an unreliable ex. Gone when you need it most."},
+    ]
+  },
+  {
+    id:33, cat:"🌐 Internet & Infrastructure", attr:"internet",
+    text:"Does electricity here take regular breaks — or is it a reliable employee?",
+    opts:[
+      {tier:"elite",     label:"Power outage is an urban legend here. I've never experienced one."},
+      {tier:"sweet",     label:"Rare, and short when it happens. Life goes on."},
+      {tier:"adventure", label:"Load shedding is a calendar entry here, not an exception."},
+      {tier:"hardcore",  label:"Candles, power banks, and a generator are basic equipment, not luxury."},
+    ]
+  },
+  {
+    id:34, cat:"🌐 Internet & Infrastructure", attr:"internet",
+    text:"Can I run my business from here, or does every video call end with 'you're freezing again'?",
+    opts:[
+      {tier:"elite",     label:"Full HD, stable connection, never an issue. My best office was here."},
+      {tier:"sweet",     label:"Usually fine — the occasional bad day, but no system failure."},
+      {tier:"adventure", label:"I moved all my meetings to mornings because the afternoon always lags."},
+      {tier:"hardcore",  label:"My team thinks my face is a pixel art. They've never seen me in HD."},
+    ]
+  },
+  {
+    id:35, cat:"🌐 Internet & Infrastructure", attr:"internet",
+    text:"Would I take a remote job here, or is that professional suicide?",
+    opts:[
+      {tier:"elite",     label:"I'd be twice as productive here as in my home office."},
+      {tier:"sweet",     label:"With the right co-working spots: absolutely doable."},
+      {tier:"adventure", label:"It works — with a backup plan, backup-backup plan, and a lot of patience."},
+      {tier:"hardcore",  label:"I sold my laptop and became a fisherman. No connection needed."},
+    ]
+  },
+
+  // ── Q36–40: political ────────────────────────────────────────────────────
+  {
+    id:36, cat:"🗳️ Politics & Freedom", attr:"political",
+    text:"Can I say what I think in public, or do I need a lawyer on standby?",
+    opts:[
+      {tier:"polProg",   label:"Free speech here isn't a concept — it's lived reality."},
+      {tier:"polOpen",   label:"Speak freely — with the usual common sense."},
+      {tier:"polTradit", label:"Certain topics are best avoided. Not from fear — from wisdom."},
+      {tier:"polStrict", label:"One careless tweet can start a multi-year trip to an uncomfortable building."},
+    ]
+  },
+  {
+    id:37, cat:"🗳️ Politics & Freedom", attr:"political",
+    text:"Is this a progressive bubble or a city that was great in 1987?",
+    opts:[
+      {tier:"polProg",   label:"It doesn't get more progressive. Pronouns are on the city logo."},
+      {tier:"polOpen",   label:"Modern and open, without hysteria in either direction."},
+      {tier:"polTradit", label:"Traditional with a hint of modernity — like a grandpa with Instagram."},
+      {tier:"polStrict", label:"Women's suffrage is still being debated here. No comment."},
+    ]
+  },
+  {
+    id:38, cat:"🗳️ Politics & Freedom", attr:"political",
+    text:"As a queer person, am I a normal human here or a silent provocation?",
+    opts:[
+      {tier:"polProg",   label:"Pride here isn't a day — it's the city's identity."},
+      {tier:"polOpen",   label:"Open and accepted — no big deal."},
+      {tier:"polTradit", label:"Accepted in certain circles. On the street: keep your eyes open."},
+      {tier:"polStrict", label:"The concept isn't yet negotiated as a human characteristic here."},
+    ]
+  },
+  {
+    id:39, cat:"🗳️ Politics & Freedom", attr:"political",
+    text:"Is the government here a digital service provider or a feudal system with WiFi?",
+    opts:[
+      {tier:"polProg",   label:"World-class e-government. I pay taxes and actually get services back. Mind-blowing."},
+      {tier:"polOpen",   label:"Works, could be faster — but nobody complains seriously."},
+      {tier:"polTradit", label:"Bureaucracy with a friendly face that never really smiles."},
+      {tier:"polStrict", label:"The state and I have a toxic relationship: I give, it takes, we don't talk."},
+    ]
+  },
+  {
+    id:40, cat:"🗳️ Politics & Freedom", attr:"political",
+    text:"Will I be celebrated for being different here, or stared at like an alien?",
+    opts:[
+      {tier:"polProg",   label:"Being different IS the standard here. Normal people are the exotic ones."},
+      {tier:"polOpen",   label:"Tolerant and curious — you'll be respected."},
+      {tier:"polTradit", label:"You stand out. Most look away. Some don't."},
+      {tier:"polStrict", label:"You get stared at daily. Eventually you make a game out of it."},
+    ]
+  },
+
+  // ── Q41–43: expatRatio ───────────────────────────────────────────────────
+  {
+    id:41, cat:"🌍 Expat & Community", attr:"expatRatio",
+    text:"Do I land in an expat bubble of yoga teachers, or am I the first foreigner in years?",
+    opts:[
+      {tier:"elite",     label:"More expats than locals here. Everyone speaks English. Everyone has a podcast."},
+      {tier:"sweet",     label:"Good mix — international flair without the culture bubble."},
+      {tier:"adventure", label:"A few expats, but you can tell you're a guest."},
+      {tier:"hardcore",  label:"I'm the only foreigner since 2019. Kids point at me."},
+    ]
+  },
+  {
+    id:42, cat:"🌍 Expat & Community", attr:"expatRatio",
+    text:"How long until I have my first real local friend here?",
+    opts:[
+      {tier:"elite",     label:"First week. People here are as open as a barn door."},
+      {tier:"sweet",     label:"A few weeks — normal, pleasant, genuine."},
+      {tier:"adventure", label:"Several months, lots of patience, a culture course helps."},
+      {tier:"hardcore",  label:"I was here two years. My closest contact was the package delivery guy."},
+    ]
+  },
+  {
+    id:43, cat:"🌍 Expat & Community", attr:"expatRatio",
+    text:"Is the expat lifestyle here a festival or a support group?",
+    opts:[
+      {tier:"elite",     label:"47 WhatsApp groups for expats. My social calendar is fuller than I've ever been."},
+      {tier:"sweet",     label:"Active community — you find your people quickly."},
+      {tier:"adventure", label:"A handful of events when the organizer feels like it."},
+      {tier:"hardcore",  label:"We met once to cry together. It was productive."},
+    ]
+  },
+
+  // ── Q44–46: walk ─────────────────────────────────────────────────────────
+  {
+    id:44, cat:"🚶 Walkability & Mobility", attr:"walk",
+    text:"Can I run my whole life in sneakers here, or do I need an SUV and a death wish?",
+    opts:[
+      {tier:"elite",     label:"Everything is walkable. I sold the car and don't miss it."},
+      {tier:"sweet",     label:"Two legs and a good transit network cover most things."},
+      {tier:"adventure", label:"A scooter isn't a luxury — it's a survival tool."},
+      {tier:"hardcore",  label:"Without a vehicle you're socially isolated and geographically trapped."},
+    ]
+  },
+  {
+    id:45, cat:"🚶 Walkability & Mobility", attr:"walk",
+    text:"Is crossing the street here a stroll or the final level of Frogger?",
+    opts:[
+      {tier:"elite",     label:"Traffic lights are respected. I've seen cars stop before I even stepped off the curb."},
+      {tier:"sweet",     label:"Normal — look, walk, arrive."},
+      {tier:"adventure", label:"I pause briefly and pray before stepping into traffic."},
+      {tier:"hardcore",  label:"Pedestrians are decorative elements here. Traffic does not negotiate."},
+    ]
+  },
+  {
+    id:46, cat:"🚶 Walkability & Mobility", attr:"walk",
+    text:"Is there public transit that deserves the name, or is waiting a lifestyle choice?",
+    opts:[
+      {tier:"elite",     label:"The transit comes to the minute. I set my watch by it."},
+      {tier:"sweet",     label:"Reliable enough to plan around."},
+      {tier:"adventure", label:"It comes. Eventually. Bring a book."},
+      {tier:"hardcore",  label:"The bus has a schedule. It's meant to be decorative."},
+    ]
+  },
+
+  // ── Q47–49: walk (Third Place) ───────────────────────────────────────────
+  {
+    id:47, cat:"🌿 Public Space", attr:"walk",
+    text:"Are there parks and squares for doing nothing, or must I consume to breathe?",
+    opts:[
+      {tier:"elite",     label:"The whole city is one giant park. Free, open, beautiful."},
+      {tier:"sweet",     label:"Good mix of public space and cafés."},
+      {tier:"adventure", label:"A few spots, but mostly you need to order something to sit."},
+      {tier:"hardcore",  label:"No space here costs nothing. Even the air feels monetized."},
+    ]
+  },
+  {
+    id:48, cat:"🌿 Public Space", attr:"walk",
+    text:"Can I nurse one coffee for 4 hours in a café without getting side-eyed?",
+    opts:[
+      {tier:"elite",     label:"Café-as-office is not just tolerated here — it's city culture."},
+      {tier:"sweet",     label:"No problem outside of rush hour."},
+      {tier:"adventure", label:"The waiter's expression after hour two speaks volumes."},
+      {tier:"hardcore",  label:"After 45 minutes someone stands next to you and asks if you're done."},
+    ]
+  },
+  {
+    id:49, cat:"🌿 Public Space", attr:"walk",
+    text:"Do people meet spontaneously on the street, or does everyone live in hermetically sealed cars?",
+    opts:[
+      {tier:"elite",     label:"Street life here is a daily celebration. Strangers actually talk to each other."},
+      {tier:"sweet",     label:"Pleasantly urban — you encounter people when you want to."},
+      {tier:"adventure", label:"The street is transit space, not living space."},
+      {tier:"hardcore",  label:"Pedestrians exist here like unicorns: theoretically provided for."},
+    ]
+  },
+
+  // ── Q50–60: Soul / Hard Truth ────────────────────────────────────────────
+  {
+    id:50, cat:"🎭 City Soul", attr:"soul",
+    text:"Is the city so beautiful you want to cry — or so ugly you only go out drunk?",
+    opts:[
+      {tier:"elite",     label:"I take photos daily like a tourist even though I've lived here for months."},
+      {tier:"sweet",     label:"Pleasant to look at — nice corners and decent streets."},
+      {tier:"adventure", label:"The center has charm, the rest is concrete honesty."},
+      {tier:"hardcore",  label:"This city was built to function. Beauty wasn't in the budget."},
+    ]
+  },
+  {
+    id:51, cat:"🎭 City Soul", attr:"soul",
+    text:"Is the food here a daily event or organized disappointment?",
+    opts:[
+      {tier:"elite",     label:"I cry when I think about having to eat somewhere else eventually."},
+      {tier:"sweet",     label:"Good, varied, affordable — I'm satisfied."},
+      {tier:"adventure", label:"Okay. Sometimes good. Sometimes a lesson in humility."},
+      {tier:"hardcore",  label:"The concept of 'flavor' was listed as optional here."},
+    ]
+  },
+  {
+    id:52, cat:"🎭 City Soul", attr:"soul",
+    text:"Will I get more productive here or spiral into the beach-party-drugs vortex?",
+    opts:[
+      {tier:"elite",     label:"I work more here than ever before. The energy is contagious."},
+      {tier:"sweet",     label:"Good balance — enough distraction, enough focus."},
+      {tier:"adventure", label:"I started calling my laptop 'Tomorrow'."},
+      {tier:"hardcore",  label:"I came for three weeks and rescheduled my flight three times. I don't work anymore."},
+    ]
+  },
+  {
+    id:53, cat:"🎭 City Soul", attr:"soul",
+    text:"Do I need to look like a Greek god at the gym to avoid being ignored?",
+    opts:[
+      {tier:"hardcore",  label:"Tracksuit and messy bun? You're elite here."},
+      {tier:"adventure", label:"Normal body, normal life — nobody judges."},
+      {tier:"sweet",     label:"A bit of effort helps. People notice each other."},
+      {tier:"elite",     label:"This isn't a gym. It's a casting. Some people only come for the mirror."},
+    ]
+  },
+  {
+    id:54, cat:"🎭 City Soul", attr:"soul",
+    text:"Would I invite my parents to visit, or would they disown me afterward?",
+    opts:[
+      {tier:"elite",     label:"My parents come every summer. My mom actually wants to stay."},
+      {tier:"sweet",     label:"They'd see the good parts and politely ignore the rest."},
+      {tier:"adventure", label:"I'd brief them before arrival. 'Don't mention everything.'"},
+      {tier:"hardcore",  label:"My dad called me on arrival and asked if I was in trouble."},
+    ]
+  },
+  {
+    id:55, cat:"🎭 City Soul", attr:"soul",
+    text:"Do I feel like an explorer here or a tourist in a Disney theme park for adults?",
+    opts:[
+      {tier:"elite",     label:"I discover something new daily. The city has layers that never run out."},
+      {tier:"sweet",     label:"Living culture with real people — no stage-set feeling."},
+      {tier:"adventure", label:"A few genuine corners, lots of decoration for visitors."},
+      {tier:"hardcore",  label:"Everything here was built for me. That's either wonderful or terrifying."},
+    ]
+  },
+  {
+    id:56, cat:"🎭 City Soul", attr:"soul",
+    text:"Is corruption here a system error or a feature?",
+    opts:[
+      {tier:"hardcore",  label:"Transparency International would vacation here."},
+      {tier:"adventure", label:"You hear rumors sometimes. You rarely encounter it."},
+      {tier:"sweet",     label:"There are ways. Some official, some less so."},
+      {tier:"elite",     label:"Corruption isn't a topic here anymore — it's the infrastructure."},
+    ]
+  },
+  {
+    id:57, cat:"🎭 City Soul", attr:"soul",
+    text:"Can I sit outside at night and just exist here, without needing a plan?",
+    opts:[
+      {tier:"elite",     label:"The nightlife starts exactly when every other city goes to sleep."},
+      {tier:"sweet",     label:"Pleasant — a few good spots, a good feeling."},
+      {tier:"adventure", label:"Something exists, but you need to know where to look."},
+      {tier:"hardcore",  label:"After 9pm the city belongs to silence and two stray dogs."},
+    ]
+  },
+  {
+    id:58, cat:"🎭 City Soul", attr:"soul",
+    text:"Does the street smell like expensive perfume or a mix of urine and melancholy?",
+    opts:[
+      {tier:"elite",     label:"If the city had a scent it would be fresh espresso and sea breeze."},
+      {tier:"sweet",     label:"Smells like city — familiar, okay, not unpleasant."},
+      {tier:"adventure", label:"Some streets make you wrinkle your nose. You learn which ones."},
+      {tier:"hardcore",  label:"The olfactory experience of this city is survival training for the senses."},
+    ]
+  },
+  {
+    id:59, cat:"🎭 City Soul", attr:"soul",
+    text:"Would I rather sit in jail than in a 12-person flat-share with digital nomads talking about NFTs?",
+    opts:[
+      {tier:"elite",     label:"This place is so chill even the flatmates don't need house meetings."},
+      {tier:"sweet",     label:"Normal daily life — you find your rhythm."},
+      {tier:"adventure", label:"The community here is... intense. You grow from it whether you want to or not."},
+      {tier:"hardcore",  label:"Yes. Jail has quieter nights and no crypto dinners."},
+    ]
+  },
+  {
+    id:60, cat:"🎯 The Final Verdict", attr:"soul",
+    text:"If this city were a film — what genre?",
+    opts:[
+      {tier:"hardcore",  label:"Feel-good romance with sunset scenes and a soundtrack I'll never forget."},
+      {tier:"adventure", label:"Solid indie drama — no blockbuster moments, but real and good."},
+      {tier:"sweet",     label:"Gritty documentary. Honest, slightly uncomfortable, but you can't look away."},
+      {tier:"elite",     label:"Apocalyptic thriller with great party scenes. You survive. Mostly."},
+    ]
+  },
+];
+
+
+const CITY_COLORS = {
+  "Berlin":["50,50,80","180,30,60","255,140,60"],
+  "Lisbon":["220,120,40","180,80,30","240,200,120"],
+  "New York City":["30,30,50","60,100,180","220,220,240"],
+  "Tokyo":["180,20,60","40,40,80","255,200,220"],
+  "Amsterdam":["30,100,160","180,140,60","200,220,240"],
+  "Paris":["80,60,100","200,160,80","230,210,190"],
+  "London":["40,50,60","180,30,30","160,180,200"],
+  "Barcelona":["220,80,30","240,180,40","60,140,200"],
+  "Rome":["200,120,40","160,60,30","240,200,140"],
+  "Vienna":["80,80,100","200,180,120","160,140,180"],
+  "Zurich":["60,100,140","200,200,220","100,160,200"],
+  "Copenhagen":["60,120,160","200,160,80","180,220,240"],
+  "Stockholm":["40,80,120","180,200,220","220,180,100"],
+  "Munich":["40,100,60","200,160,40","160,100,60"],
+  "Madrid":["200,60,40","240,160,40","80,60,100"],
+  "Prague":["100,60,40","180,140,80","60,80,120"],
+  "Warsaw":["160,30,40","200,180,160","60,60,80"],
+  "Budapest":["180,100,40","120,60,80","200,180,120"],
+  "Athens":["200,180,120","60,100,160","240,220,180"],
+  "Singapore":["0,160,140","40,40,60","180,240,220"],
+  "Sydney":["30,120,200","220,160,60","180,220,255"],
+  "Dubai":["200,160,60","40,40,50","255,220,120"],
+  "Toronto":["160,30,40","60,80,120","200,200,220"],
+  "San Francisco":["220,100,40","60,80,140","255,180,100"],
+  "Seoul":["60,40,120","200,40,80","180,160,240"],
+  "Hong Kong":["42,19,92","113,36,126","228,67,164"],
+  "São Paulo":["46,19,92","118,36,126","228,67,155"],
+  "Mexico City":["33,19,92","102,36,126","228,67,185"],
+  "Istanbul":["19,92,45","36,126,116","67,159,228"],
+  "Tel Aviv":["71,19,92","126,36,104","228,67,101"],
+  "Melbourne":["19,92,21","36,126,87","67,212,228"],
+  "Taipei":["92,89,19","81,126,36","67,228,73"],
+  "Osaka":["92,19,56","126,39,36","228,159,67"],
+  "Mumbai":["26,92,19","36,126,77","67,228,226"],
+  "Cape Town":["19,74,92","36,55,126","120,67,228"],
+  "Cairo":["86,92,19","70,126,36","67,228,94"],
+  "Kuala Lumpur":["92,81,19","91,126,36","78,228,67"],
+  "Reykjavik":["19,70,92","36,50,126","130,67,228"],
+  "Brussels":["19,92,27","36,126,95","67,197,228"],
+  "Los Angeles":["92,22,19","126,88,36","209,228,67"],
+  "Chicago":["41,19,92","112,36,126","228,67,167"],
+  "Delhi":["25,92,19","36,126,77","67,228,227"],
+  "Bangalore":["92,19,86","126,36,69","228,94,67"],
+  "Lagos":["19,92,41","36,126,111","67,167,228"],
+  "Nairobi":["45,19,92","116,36,126","228,67,159"],
+  "Canggu":["92,19,34","126,66,36","228,208,67"],
+  "Medellin":["92,74,19","100,126,36","94,228,67"],
+  "Da Nang":["19,19,92","85,36,126","228,67,214"],
+  "Bansko":["81,19,92","126,36,92","228,67,80"],
+  "Las Palmas":["19,92,71","36,103,126","67,100,228"],
+  "Chiang Mai":["92,52,19","126,125,36","143,228,67"],
+  "Playa del Carmen":["78,92,19","60,126,36","67,228,112"],
+  "Tbilisi":["92,69,19","105,126,36","104,228,67"],
+  "Tallinn":["33,19,92","102,36,126","228,67,184"],
+  "Split":["92,19,25","126,78,36","227,228,67"],
+  "Tulum":["92,87,19","84,126,36","67,228,69"],
+  "Bali (Ubud)":["19,92,74","36,100,126","67,95,228"],
+  "Porto":["73,92,19","54,126,36","67,228,122"],
+  "Valencia":["92,82,19","90,126,36","76,228,67"],
+  "Oaxaca":["19,92,33","36,126,102","67,183,228"],
+  "Chiang Rai":["19,92,28","36,126,95","67,196,228"],
+  "Medellín":["92,47,19","126,119,36","154,228,67"],
+  "Florianópolis":["74,92,19","55,126,36","67,228,121"],
+  "Madeira":["19,61,92","36,40,126","148,67,228"],
+  "Phuket":["34,92,19","36,126,67","67,228,209"],
+  "Penang":["92,65,19","111,126,36","115,228,67"],
+  "Ho Chi Minh City":["19,89,92","36,73,126","88,67,228"],
+  "Hoi An":["54,19,92","126,36,124","228,67,138"],
+  "Koh Lanta":["92,19,20","126,83,36","217,228,67"],
+  "Batumi":["81,19,92","126,36,92","228,67,80"],
+  "Diani Beach":["92,19,43","126,56,36","228,188,67"],
+  "Mostar":["50,19,92","123,36,126","228,67,146"],
+  "Ohrid":["19,19,92","85,36,126","228,67,215"],
+  "Plovdiv":["22,19,92","88,36,126","228,67,210"],
+  "Valletta":["92,29,19","126,97,36","193,228,67"],
+  "San Cristóbal":["46,19,92","117,36,126","228,67,157"],
+  "Cali":["92,19,73","126,36,54","228,122,67"],
+  "Kigali":["92,19,23","126,81,36","222,228,67"],
+  "Phnom Penh":["92,54,19","124,126,36","137,228,67"],
+  "Zadar":["92,19,22","126,81,36","222,228,67"],
+  "Palermo":["92,39,19","126,109,36","171,228,67"],
+  "Brno":["92,19,45","126,53,36","228,183,67"],
+  "Lake Atitlán":["92,23,19","126,89,36","207,228,67"],
+  "Antigua":["19,92,57","36,121,126","67,132,228"],
+  "Siem Reap":["38,19,92","108,36,126","228,67,172"],
+  "Uvita":["19,92,56","36,122,126","67,134,228"],
+  "Luang Prabang":["92,19,52","126,44,36","228,168,67"],
+  "Holbox":["75,19,92","126,36,99","228,67,92"],
+  "Sayulita":["26,19,92","94,36,126","228,67,199"],
+  "Kotor":["26,19,92","93,36,126","228,67,199"],
+  "Georgetown":["19,92,60","36,117,126","67,125,228"],
+  "Paramaribo":["19,88,92","36,72,126","90,67,228"],
+  "Funchal":["92,72,19","103,126,36","99,228,67"],
+  "Nha Trang":["19,72,92","36,52,126","125,67,228"],
+  "Tarifa":["19,92,28","36,126,95","67,196,228"],
+  "Ponta Delgada":["92,19,42","126,57,36","228,190,67"],
+  "Skopje":["22,19,92","89,36,126","228,67,208"],
+  "Timișoara":["61,19,92","126,36,115","228,67,122"],
+  "Iași":["60,19,92","126,36,117","228,67,125"],
+  "Huatulco":["92,72,19","102,126,36","98,228,67"],
+  "Apia":["92,19,58","126,37,36","228,155,67"],
+  "Windhoek":["31,92,19","36,126,70","67,228,214"],
+  "Dar es Salaam":["19,35,92","66,36,126","207,67,228"],
+  "Colombo":["36,92,19","36,126,64","67,228,204"],
+  "Accra":["20,92,19","36,126,84","67,216,228"],
+  "Almaty":["39,92,19","36,126,60","67,228,196"],
+  "Buenos Aires":["92,20,19","126,86,36","213,228,67"],
+  "Belgrade":["19,81,92","36,64,126","105,67,228"],
+  "Bogotá":["88,19,92","126,36,83","228,70,67"],
+  "Kyiv":["30,19,92","98,36,126","228,67,191"],
+  "Tashkent":["48,92,19","36,126,49","67,228,176"],
+  "Yerevan":["92,19,72","126,36,53","228,124,67"],
+  "Addis Ababa":["80,19,92","126,36,93","228,67,82"],
+  "Dakar":["19,44,92","55,36,126","187,67,228"],
+  "Havana":["19,92,52","36,126,125","67,142,228"],
+  "La Paz":["92,19,71","126,36,51","228,127,67"],
+  "Asunción":["19,92,41","36,126,112","67,166,228"],
+  "Montevideo":["23,92,19","36,126,80","67,223,228"],
+  "Santiago":["19,89,92","36,73,126","87,67,228"],
+  "Lima":["19,92,26","36,126,93","67,200,228"],
+  "Quito":["92,19,79","126,36,62","228,109,67"],
+  "Baku":["26,19,92","94,36,126","228,67,199"],
+  "Islamabad":["19,92,39","36,126,109","67,172,228"],
+  "Karachi":["56,19,92","126,36,122","228,67,134"],
+  "Yangon":["19,46,92","52,36,126","181,67,228"],
+  "Ulaanbaatar":["92,34,19","126,103,36","182,228,67"],
+  "Kathmandu":["92,19,43","126,56,36","228,189,67"],
+  "Dhaka":["29,92,19","36,126,72","67,228,219"],
+  "Riyadh":["43,19,92","114,36,126","228,67,162"],
+  "Beirut":["92,90,19","80,126,36","67,228,76"],
+  "Tunis":["19,61,92","36,39,126","149,67,228"],
+  "Casablanca":["25,19,92","91,36,126","228,67,203"],
+  "Marrakech":["92,19,68","126,36,48","228,132,67"],
+  "Harare":["19,34,92","66,36,126","207,67,228"],
+  "Antananarivo":["19,92,61","36,115,126","67,122,228"],
+  "Luanda":["92,19,56","126,39,36","228,159,67"],
+  "Bishkek":["92,26,19","126,94,36","199,228,67"],
+  "Dushanbe":["92,37,19","126,107,36","176,228,67"],
+  "N'Djamena":["92,89,19","81,126,36","67,228,73"],
+  "Kabul":["92,50,19","126,122,36","148,228,67"],
+  "Pyongyang":["92,19,88","126,36,72","228,90,67"],
+  "Mogadishu":["19,70,92","36,50,126","130,67,228"],
+  "Caracas":["19,92,44","36,126,115","67,160,228"],
+  "Port-au-Prince":["24,92,19","36,126,79","67,225,228"],
+  "Kinshasa":["19,92,62","36,115,126","67,121,228"],
+  "Tripoli":["92,19,78","126,36,60","228,111,67"],
+  "Sanaa":["29,92,19","36,126,72","67,228,219"],
+  "Homs":["92,19,60","126,36,38","228,150,67"],
+  "Bangui":["86,19,92","126,36,85","228,67,67"],
+};
+
+
+const FLAG_MAP = {
+  "Germany":"🇩🇪","Portugal":"🇵🇹","USA":"🇺🇸","Japan":"🇯🇵","Netherlands":"🇳🇱",
+  "France":"🇫🇷","UK":"🇬🇧","Spain":"🇪🇸","Italy":"🇮🇹","Austria":"🇦🇹",
+  "Switzerland":"🇨🇭","Denmark":"🇩🇰","Sweden":"🇸🇪","Czech Republic":"🇨🇿",
+  "Poland":"🇵🇱","Hungary":"🇭🇺","Greece":"🇬🇷","Singapore":"🇸🇬","Australia":"🇦🇺",
+  "UAE":"🇦🇪","Canada":"🇨🇦","South Korea":"🇰🇷","China":"🇨🇳","Brazil":"🇧🇷",
+  "Mexico":"🇲🇽","Turkey":"🇹🇷","Israel":"🇮🇱","Taiwan":"🇹🇼","India":"🇮🇳",
+  "South Africa":"🇿🇦","Egypt":"🇪🇬","Malaysia":"🇲🇾","Iceland":"🇮🇸","Belgium":"🇧🇪",
+  "Nigeria":"🇳🇬","Kenya":"🇰🇪","Indonesia":"🇮🇩","Colombia":"🇨🇴","Vietnam":"🇻🇳",
+  "Bulgaria":"🇧🇬","Thailand":"🇹🇭","Estonia":"🇪🇪","Croatia":"🇭🇷","Georgia":"🇬🇪",
+  "Bosnia":"🇧🇦","North Macedonia":"🇲🇰","Malta":"🇲🇹","Rwanda":"🇷🇼","Cambodia":"🇰🇭",
+  "Serbia":"🇷🇸","Armenia":"🇦🇲","Ukraine":"🇺🇦","Uzbekistan":"🇺🇿","Ethiopia":"🇪🇹",
+  "Senegal":"🇸🇳","Cuba":"🇨🇺","Bolivia":"🇧🇴","Paraguay":"🇵🇾","Uruguay":"🇺🇾",
+  "Chile":"🇨🇱","Peru":"🇵🇪","Ecuador":"🇪🇨","Azerbaijan":"🇦🇿","Pakistan":"🇵🇰",
+  "Myanmar":"🇲🇲","Mongolia":"🇲🇳","Nepal":"🇳🇵","Bangladesh":"🇧🇩","Saudi Arabia":"🇸🇦",
+  "Lebanon":"🇱🇧","Tunisia":"🇹🇳","Morocco":"🇲🇦","Zimbabwe":"🇿🇼","Madagascar":"🇲🇬",
+  "Angola":"🇦🇴","Kyrgyzstan":"🇰🇬","Tajikistan":"🇹🇯","Chad":"🇹🇩","Afghanistan":"🇦🇫",
+  "North Korea":"🇰🇵","Somalia":"🇸🇴","Venezuela":"🇻🇪","Haiti":"🇭🇹","DRC":"🇨🇩",
+  "Libya":"🇱🇾","Yemen":"🇾🇪","Syria":"🇸🇾","CAR":"🇨🇫","Guatemala":"🇬🇹",
+  "Montenegro":"🇲🇪","Guyana":"🇬🇾","Suriname":"🇸🇷","Namibia":"🇳🇦","Tanzania":"🇹🇿",
+  "Sri Lanka":"🇱🇰","Ghana":"🇬🇭","Kazakhstan":"🇰🇿","Argentina":"🇦🇷","Romania":"🇷🇴",
+  "Samoa":"🇼🇸","Costa Rica":"🇨🇷","Laos":"🇱🇦",
+};
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CONSTANTS & SCORING ENGINE
+// ─────────────────────────────────────────────────────────────────────────────
+const INVERTED_ATTRS = ["pulse", "redTape"];
+
+const TIER_TARGET = { elite:9, sweet:7, adventure:4, hardcore:1.5 };
+
+const POL_NUMERIC = { polProg:9, polOpen:7, polTradit:4, polStrict:1.5 };
+
+function cityPoliticalNumeric(city) {
+  return city.political === "Liberal" ? 8.5 : 2.5;
+}
+
+const SOUL_ATTRS = ["laptopSafety","pulse","thirst","wealth","air","walk","internet","expatRatio"];
+
+const MAX_POSSIBLE_DISTANCE = 187;
+
+function scoreCity(city, answers) {
+  let totalWeightedDistance = 0;
+  let maxWeightedDistance = 0;
+  const matchDetails = [];
+
+  answers.forEach(answer => {
+    const { attr, tier } = answer;
+    let userTarget, cityValue, weight, label;
+
+    if (attr === "political") {
+      userTarget = POL_NUMERIC[tier] ?? 5;
+      cityValue  = cityPoliticalNumeric(city);
+      weight     = (tier === "polProg" || tier === "polStrict") ? 2.0 : 1.0;
+      label      = "Politics";
+
+    } else if (attr === "soul") {
+      const rawTarget = TIER_TARGET[tier] ?? 5;
+      let totalDist = 0, counted = 0;
+      SOUL_ATTRS.forEach(a => {
+        if (city[a] === undefined) return;
+        const effectiveTarget = INVERTED_ATTRS.includes(a) ? (10.5 - rawTarget) : rawTarget;
+        totalDist += Math.abs(effectiveTarget - city[a]);
+        counted++;
+      });
+      const avgDist = counted > 0 ? totalDist / counted : 5;
+      weight = (tier === "elite" || tier === "hardcore") ? 2.0 : 1.0;
+      totalWeightedDistance += avgDist * weight;
+      maxWeightedDistance   += 8.5 * weight;
+      const pct = Math.round((1 - (avgDist * weight) / (8.5 * weight)) * 100);
+      if (pct >= 70) matchDetails.push({ attr:"soul", pct, label:"🎭 City Vibe Match" });
+      return;
+
+    } else {
+      const rawTarget = TIER_TARGET[tier];
+      if (rawTarget === undefined) return;
+      userTarget = INVERTED_ATTRS.includes(attr) ? (10.5 - rawTarget) : rawTarget;
+      cityValue  = city[attr];
+      if (cityValue === undefined) return;
+      weight = (tier === "elite" || tier === "hardcore") ? 2.0 : 1.0;
+      label  = attr;
+    }
+
+    const distance = Math.abs(userTarget - cityValue);
+    const weighted = distance * weight;
+    totalWeightedDistance += weighted;
+    maxWeightedDistance   += 8.5 * weight;
+    const pct = Math.round((1 - weighted / (8.5 * weight)) * 100);
+    if (pct >= 70) matchDetails.push({ attr, pct, label });
+  });
+
+  // Warlord gate
+  const dangerCount   = ["laptopSafety","internet","walk"].filter(a => city[a] <= 2).length;
+  const hardcoreCount = answers.filter(a => a.tier === "hardcore" || a.tier === "polStrict").length;
+  if (dangerCount >= 3 && hardcoreCount < 2) totalWeightedDistance += 25;
+
+  const usedMax    = maxWeightedDistance || MAX_POSSIBLE_DISTANCE;
+  const displayScore = Math.max(0, Math.round((1 - totalWeightedDistance / usedMax) * 100));
+
+  return {
+    score: -totalWeightedDistance,
+    displayScore,
+    matchDetails: matchDetails.sort((a,b) => b.pct - a.pct).slice(0,3),
+    totalWeightedDistance,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ANTI-REPEAT QUESTION SYSTEM
+// ─────────────────────────────────────────────────────────────────────────────
+const ATTR_GROUPS = [
+  "laptopSafety","pulse","thirst","wealth","redTape",
+  "air","internet","political","expatRatio","walk","soul",
+];
+
+const sessionUsed = {};
+ATTR_GROUPS.forEach(a => { sessionUsed[a] = []; });
+
+function getNextQuestions() {
+  const picked = [];
+  ATTR_GROUPS.forEach(attr => {
+    const groupPool = QUESTIONS_POOL.filter(q => q.attr === attr);
+    if (!groupPool.length) return;
+    if (sessionUsed[attr].length >= groupPool.length) sessionUsed[attr] = [];
+    const available = groupPool.filter(q => !sessionUsed[attr].includes(q.id));
+    const chosen    = available[Math.floor(Math.random() * available.length)];
+    if (chosen) { sessionUsed[attr].push(chosen.id); picked.push(chosen); }
+  });
+  return picked.sort(() => Math.random() - 0.5);
+}
+
+function totalUsedCount() {
+  return Object.values(sessionUsed).reduce((s,a) => s + a.length, 0);
+}
+
+const ATTR_LABELS = {
+  laptopSafety:"🔒 Safety & Security", thirst:"💘 Dating & Social Life",
+  pulse:"⚡ City Energy & Chaos",       walk:"👟 Walkability",
+  wealth:"💸 Purchasing Power",         redTape:"📋 Bureaucracy Level",
+  air:"☀️ Air & Sunlight",              internet:"🌐 Internet Reliability",
+  expatRatio:"🌍 Expat Community",      political:"🗳️ Political Vibe",
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// APP STATE
+// ─────────────────────────────────────────────────────────────────────────────
+let phase      = "intro";
+let questions  = [];
+let currentQ   = 0;
+let answers    = [];
+let result     = null;
+let showWhy    = false;
+let selectedOpt = null;
+const OPT_COLORS = ["#00d4aa","#4488ff","#ff8c42","#ff3264"];
+const OPT_LETTERS = ["A","B","C","D"];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SCREEN SWITCHER
+// ─────────────────────────────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INTRO
+// ─────────────────────────────────────────────────────────────────────────────
+function updateIntroSession() {
+  const used  = totalUsedCount();
+  const total = QUESTIONS_POOL.length;
+  const info  = document.getElementById('session-info');
+  if (used > 0) {
+    info.style.display = 'block';
+    document.getElementById('session-used').textContent  = used;
+    document.getElementById('session-total').textContent = total;
+    document.getElementById('pool-reset-msg').style.display = used >= total ? 'inline' : 'none';
+  } else {
+    info.style.display = 'none';
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// QUIZ
+// ─────────────────────────────────────────────────────────────────────────────
+function startQuiz() {
+  questions   = getNextQuestions();
+  currentQ    = 0;
+  answers     = [];
+  result      = null;
+  showWhy     = false;
+  selectedOpt = null;
+  updateIntroSession();
+  showScreen('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q      = questions[currentQ];
+  const total  = questions.length;
+  const progress = (currentQ / total) * 100;
+
+  document.getElementById('q-cat').textContent     = q.cat;
+  document.getElementById('q-counter').textContent = (currentQ+1) + ' / ' + total;
+  document.getElementById('progress-fill').style.width = progress + '%';
+  document.getElementById('q-text').textContent    = q.text;
+
+  // Options
+  const optWrap = document.getElementById('options');
+  optWrap.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const col = OPT_COLORS[i];
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.style.setProperty('--col',    col);
+    btn.style.setProperty('--col10',  col+'10');
+    btn.style.setProperty('--col18',  col+'18');
+    btn.style.setProperty('--col20',  col+'20');
+    btn.style.setProperty('--col40',  col+'40');
+    btn.style.setProperty('--col50',  col+'50');
+    btn.style.setProperty('--col70',  col+'70');
+    btn.innerHTML =
+      '<span class="opt-letter">'+OPT_LETTERS[i]+'</span>' +
+      '<span>' + opt.label.replace(/^[A-D] — /,'') + '</span>';
+    btn.addEventListener('click', () => handleAnswer(opt, q, btn));
+    optWrap.appendChild(btn);
+  });
+
+  // Dots
+  const dotsEl = document.getElementById('dots');
+  dotsEl.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i < currentQ ? ' done' : i === currentQ ? ' active' : '');
+    d.style.width = (i === currentQ ? 22 : 6) + 'px';
+    dotsEl.appendChild(d);
+  }
+
+  // Animate in
+  const wrap = document.getElementById('question-wrap');
+  wrap.classList.remove('hidden');
+}
+
+function handleAnswer(opt, q, btn) {
+  if (selectedOpt) return;
+  selectedOpt = opt.label;
+
+  // Highlight selected
+  document.querySelectorAll('.opt-btn').forEach(b => b.classList.add('locked'));
+  btn.classList.add('selected');
+
+  setTimeout(() => {
+    const newAnswer = { attr: q.attr, tier: opt.tier };
+    answers.push(newAnswer);
+
+    if (currentQ + 1 >= questions.length) {
+      // Score all cities
+      const scored = cityData.map(city => ({
+        ...city, ...scoreCity(city, answers)
+      }));
+      scored.sort((a,b) => b.score - a.score);
+      const top5 = scored.slice(0,5);
+      const W    = [0.40,0.25,0.20,0.10,0.05];
+      let cumul  = 0, chosen = top5[0];
+      const rand = Math.random();
+      for (let i = 0; i < top5.length; i++) {
+        cumul += W[i];
+        if (rand < cumul) { chosen = top5[i]; break; }
+      }
+      result = chosen;
+      showResult();
+    } else {
+      const wrap = document.getElementById('question-wrap');
+      wrap.classList.add('hidden');
+      setTimeout(() => {
+        currentQ++;
+        selectedOpt = null;
+        renderQuestion();
+      }, 180);
+    }
+  }, 350);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RESULT
+// ─────────────────────────────────────────────────────────────────────────────
+function soulColor(soul) {
+  const s = soul.toLowerCase();
+  if (s.includes('dystopia')||s.includes('chaos')||s.includes('anarchic')||s.includes('survival')) return '#ff3264';
+  if (s.includes('wealthy')||s.includes('steril-rich')||s.includes('gold')||s.includes('steril'))  return '#ffd700';
+  if (s.includes('zen')||s.includes('slow')||s.includes('paradise')||s.includes('nature'))          return '#00d4aa';
+  if (s.includes('hustle')||s.includes('grinder')||s.includes('burnout')||s.includes('speed'))      return '#ff8c42';
+  if (s.includes('lonely')||s.includes('isolation')||s.includes('isolated'))                        return '#8888ff';
+  return '#ff3264';
+}
+
+function barColor(v) {
+  return v >= 8 ? '#00d4aa' : v >= 5 ? '#4488ff' : v >= 3 ? '#ff8c42' : '#ff3264';
+}
+
+function showResult() {
+  const city = result;
+  const flag = FLAG_MAP[city.country] || '🌍';
+  const col  = soulColor(city.soul);
+  const colors = CITY_COLORS[city.city] || ['40,40,70','100,60,100','180,100,140'];
+  const [p, s, a] = colors;
+  const bg = 'linear-gradient(135deg, rgba('+p+',0.95) 0%, rgba('+s+',0.80) 50%, rgba('+a+',0.60) 100%)';
+
+  // Header
+  document.getElementById('r-flag').textContent = flag;
+
+  // Hero banner
+  document.getElementById('hero-banner').style.background = bg;
+  document.getElementById('hero-soul').textContent        = city.soul;
+  document.getElementById('hero-city-name').textContent   = city.city;
+  document.getElementById('hero-country').textContent     = city.country;
+
+  // Score
+  const score = city.displayScore ?? 0;
+  document.getElementById('score-value').textContent     = score + '% Match';
+  document.getElementById('score-value').style.color     = col;
+  document.getElementById('score-fill').style.width      = Math.max(2,score) + '%';
+  document.getElementById('score-fill').style.background = 'linear-gradient(90deg,'+col+',#ff8c42)';
+  document.getElementById('score-fill').style.boxShadow  = '0 0 10px '+col+'60';
+
+  // Political badge
+  const polEl = document.getElementById('pol-badge');
+  const isLib = city.political === 'Liberal';
+  polEl.className   = 'pol-badge ' + (isLib ? 'pol-liberal' : 'pol-conservative');
+  polEl.textContent = (isLib ? '🟢' : '🟡') + ' ' + city.political + ' · ' + city.country;
+
+  // Stats grid
+  const stats = [
+    {icon:'🔒',label:'Safety', val:city.laptopSafety},
+    {icon:'💘',label:'Dating', val:city.thirst},
+    {icon:'⚡',label:'Chaos',  val:city.pulse},
+    {icon:'💸',label:'Value',  val:city.wealth},
+    {icon:'☀️',label:'Air',    val:city.air},
+    {icon:'👟',label:'Walk',   val:city.walk},
+    {icon:'🌐',label:'Net',    val:city.internet},
+    {icon:'📋',label:'Tape',   val:city.redTape},
+  ];
+  const grid = document.getElementById('stats-grid');
+  grid.innerHTML = stats.map(st => {
+    const bc = barColor(st.val);
+    return '<div class="stat-cell">' +
+      '<div class="stat-icon">' + st.icon + '</div>' +
+      '<div class="stat-val" style="color:'+bc+'">' + st.val + '</div>' +
+      '<div class="stat-bar-track"><div class="stat-bar-fill" style="width:'+st.val*10+'%;background:'+bc+'"></div></div>' +
+      '<div class="stat-lbl">' + st.label + '</div>' +
+      '</div>';
+  }).join('');
+
+  // Intel & Truth
+  document.getElementById('r-bestFor').textContent   = city.bestFor;
+  document.getElementById('r-secretTip').textContent = city.secretTip;
+  document.getElementById('r-truth').textContent     = '"' + city.truth + '"';
+
+  // Why this city
+  showWhy = false;
+  document.getElementById('why-panel').classList.remove('open');
+  document.getElementById('why-arrow').textContent = '▼';
+  const rows = document.getElementById('why-rows');
+  if (city.matchDetails && city.matchDetails.length > 0) {
+    rows.innerHTML = city.matchDetails.map((m,i) =>
+      '<div class="match-row">' +
+        '<div>' +
+          '<div class="match-attr">'+(ATTR_LABELS[m.attr]||m.attr)+'</div>' +
+          '<div class="match-sub">'+m.label+'</div>' +
+        '</div>' +
+        '<span class="match-pct">'+m.pct+'%</span>' +
+      '</div>'
+    ).join('');
+  } else {
+    rows.innerHTML = '';
+  }
+
+  // Pool counter
+  document.getElementById('pool-counter').textContent =
+    totalUsedCount() + '/' + QUESTIONS_POOL.length + ' questions seen from pool' +
+    (totalUsedCount() >= QUESTIONS_POOL.length ? ' · Pool resets on next start' : '');
+
+  showScreen('result');
+
+  // Animate score fill
+  setTimeout(() => {
+    document.getElementById('score-fill').style.width = Math.max(2,score) + '%';
+  }, 50);
+}
+
+function toggleWhy() {
+  showWhy = !showWhy;
+  document.getElementById('why-panel').classList.toggle('open', showWhy);
+  document.getElementById('why-arrow').textContent = showWhy ? '▲' : '▼';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BOOT
+// ─────────────────────────────────────────────────────────────────────────────
+updateIntroSession();
+
+// Debug runs (console only)
+setTimeout(() => {
+  const testA = ATTR_GROUPS.map(attr => ({
+    attr, tier: attr === 'political' ? 'polProg' : 'elite'
+  }));
+  const scoresA = cityData.map(c => ({city:c.city,...scoreCity(c,testA)}))
+    .sort((a,b)=>b.displayScore-a.displayScore).slice(0,3);
+  console.log('=== A-Run top 3:', scoresA.map(c=>c.city+' '+c.displayScore+'%').join(', '));
+}, 500);
+
+</script>
+</body>
+</html>
