@@ -386,7 +386,28 @@
   .result-footer {
     text-align: center; margin-top: 14px;
     font-size: 10px; color: rgba(80,80,120,0.4); letter-spacing: 1px;
+  }  .btn-share {
+    width: 100%; margin-bottom: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 10px; padding: 15px;
+    font-size: 14px; font-weight: 600; color: rgba(210,210,235,0.85);
+    cursor: pointer; letter-spacing: 1px;
+    font-family: inherit;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
   }
+  .btn-share:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.25);
+    color: #fff;
+  }
+  .btn-share.copied {
+    border-color: rgba(0,212,170,0.5);
+    color: #00d4aa;
+    background: rgba(0,212,170,0.06);
+  }
+
 </style>
 </head>
 <body>
@@ -520,10 +541,16 @@
         </div>
       </div>
 
-      <div class="pool-counter" id="pool-counter"></div>
+           <div class="pool-counter" id="pool-counter"></div>
+
+      <button class="btn-share" id="btn-share" onclick="shareResult()">
+        <span id="share-icon">↗</span>
+        <span id="share-label">Share My Result</span>
+      </button>
 
       <button class="btn-restart" onclick="startQuiz()">🔄 New Round — Different Mix</button>
       <p class="result-footer">149 CITIES · 4-OPTION SCORING · ANTI-REPEAT · CORE-CATEGORY GATE</p>
+
     </div>
 
   </div><!-- #app -->
@@ -1864,6 +1891,33 @@ function toggleWhy() {
   showWhy = !showWhy;
   document.getElementById('why-panel').classList.toggle('open', showWhy);
   document.getElementById('why-arrow').textContent = showWhy ? '▲' : '▼';
+}
+function shareResult() {
+  if (!result) return;
+  const text =
+    'My city soulmate is ' + result.city + ' 🌍\n' +
+    'Soul: ' + result.soul + '\n' +
+    'Hard Truth: ' + result.truth + '\n' +
+    'Find yours → citysoulmate.com';
+
+  const btn   = document.getElementById('btn-share');
+  const label = document.getElementById('share-label');
+  const icon  = document.getElementById('share-icon');
+
+  if (navigator.share) {
+    navigator.share({ text }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add('copied');
+      icon.textContent  = '✓';
+      label.textContent = 'Copied!';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        icon.textContent  = '↗';
+        label.textContent = 'Share My Result';
+      }, 2000);
+    }).catch(() => {});
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
